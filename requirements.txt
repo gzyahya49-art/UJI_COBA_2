@@ -5,4 +5,4 @@ openpyxl
 plotly
 scikit-learn
 tensorflow-cpu
-streamlit-autorefresh
+streamlit_autorefresh
