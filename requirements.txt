@@ -4,5 +4,4 @@ numpy
 openpyxl
 plotly
 scikit-learn
-tensorflow-cpu
 streamlit_autorefresh
