@@ -23,7 +23,7 @@ from PIL import Image
 # CONFIG & THEME STREAMLIT (Satu Halaman Tunggal)
 # ==================================
 st.set_page_config(
-    page_title="Sistem Monitoring & Analisis Bayam - Hydrotech 1",
+    page_title="Sistem Monitoring & Analisis Bayam - BRAZILEARN ONE HYDROTECH",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -35,73 +35,92 @@ st.markdown("""
         background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSD0MnK0fOm6BBdgWVGHh5DLgsyBqppShq37ytsMvqEQ&s=10') no-repeat center/cover;
     }
     
-    /* Lapisan transparan agar background luar tidak terlalu menusuk mata */
+    /* Lapisan dasar semi transparan agar background tidak menusuk mata */
     [data-testid="stHeader"], [data-testid="stMainBlockContainer"] {
-        background-color: rgba(6, 14, 10, 0.4) !important;
+        background-color: rgba(6, 14, 10, 0.5) !important;
     }
 
     /* 2. Heading (H1, H2, H3) Hijau Neon Terang Berpendar */
     h1, h2, h3, [data-testid="stMarkdownContainer"] h1, [data-testid="stMarkdownContainer"] h2, [data-testid="stMarkdownContainer"] h3 {
         color: #00FF87 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-shadow: 0 0 10px rgba(0, 255, 135, 0.6);
+        text-shadow: 0 0 12px rgba(0, 255, 135, 0.7);
     }
     
     .stHeadingContainer h2, .stHeadingContainer h3 {
         color: #00FF87 !important;
     }
 
-    /* 3. MENAMBAHKAN BACKGROUND NEON UNTUK SEMUA TEKS BIASA / DESKRIPSI AGAR NAMPAK KELUAR */
+    /* 3. Wadah Judul Utama Keren (Glassmorphism + Neon Border) */
+    .header-neon-box {
+        background-color: rgba(12, 28, 20, 0.85) !important;
+        padding: 25px;
+        border-radius: 14px;
+        border: 2px solid #00FF87;
+        box-shadow: 0 0 20px rgba(0, 255, 135, 0.4);
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    /* 4. Perbaikan Wadah Teks Deskripsi & Label Supaya Rapi (Tidak Terpotong Kotak-Kotak Kecil) */
     [data-testid="stMarkdownContainer"] p, 
     [data-testid="stWidgetLabel"] p, 
     .stSelectbox p, 
-    .stSlider p, 
-    div[data-testid="stAlert"] p,
+    .stSlider p,
     span[data-testid="stTextAreaWidgetApiKeyCounter"] {
-        background-color: rgba(12, 28, 20, 0.85) !important; /* Kotak gelap berkabut */
-        color: #e0f2e9 !important; /* Teks putih kehijauan cerah */
-        padding: 6px 12px;
-        border-radius: 6px;
-        border-left: 3px solid #00FF87; /* Garis aksen neon di kiri teks */
+        color: #e0f2e9 !important;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 15px;
+    }
+    
+    /* Box khusus untuk info teks pendukung agar rapi */
+    .info-text-box {
+        background-color: rgba(12, 28, 20, 0.85) !important;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border-left: 4px solid #00FF87;
         box-shadow: 0 0 8px rgba(0, 255, 135, 0.2);
-        display: inline-block; /* Menyesuaikan lebar kotak dengan panjang teks */
-        margin-bottom: 4px;
+        margin-top: 8px;
+        display: block;
     }
 
-    /* 4. Perbaikan Teks di Dalam Struktur Tab */
+    /* 5. Perbaikan Teks di Dalam Struktur Tab */
     button[data-baseweb="tab"] p {
-        background-color: transparent !important; /* Menjaga teks judul tab tetap bersih */
+        background-color: transparent !important;
         color: #00FF87 !important;
         text-shadow: 0 0 5px rgba(0, 255, 135, 0.4);
     }
     
-    /* 5. Pengaturan Kotak Metrik (Latar abu-abu gelap dengan border neon) */
+    /* 6. Pengaturan Kotak Metrik Rapi (Proporsional & Sejajar) */
     .stMetric {
-        background-color: rgba(20, 38, 30, 0.9) !important;
-        padding: 15px;
-        border-radius: 12px;
+        background-color: rgba(15, 32, 24, 0.93) !important;
+        padding: 12px 18px !important;
+        border-radius: 10px !important;
+        border: 1px solid rgba(0, 255, 135, 0.3) !important;
         border-left: 5px solid #00FF87 !important;
-        box-shadow: 0 0 15px rgba(0, 255, 135, 0.4) !important;
+        box-shadow: 0 0 15px rgba(0, 255, 135, 0.25) !important;
     }
     
     /* Nilai Angka Metrik */
     div[data-testid="stMetricValue"] {
         color: #00FF87 !important;
-        text-shadow: 0 0 12px rgba(0, 255, 135, 0.8) !important;
+        text-shadow: 0 0 10px rgba(0, 255, 135, 0.7) !important;
         font-weight: bold;
+        font-size: 28px !important;
     }
 
     /* Judul Atas Metrik */
     div[data-testid="stMetricLabel"] p {
-        background-color: transparent !important; /* Supaya tidak double kotak di dalam metrik */
+        background-color: transparent !important;
         border-left: none !important;
         box-shadow: none !important;
-        color: #e0f2e9 !important;
-        font-weight: bold;
+        color: #a3ffd0 !important;
+        font-weight: 600;
         padding: 0 !important;
+        font-size: 14px !important;
     }
     
-    /* 6. Kotak Dropzone File Uploader */
+    /* 7. Kotak Dropzone File Uploader */
     [data-testid="stFileUploaderDropzone"] {
         background-color: rgba(15, 32, 24, 0.85) !important;
         border: 2px dashed #00FF87 !important;
@@ -187,25 +206,28 @@ kelas_pred = np.argmax(hasil_pred)
 prediksi_status_tanah = encoder.classes_[kelas_pred]
 
 # --------------------------------------------------
-# HEADER DASHBOARD
+# WADAH HEADER DASHBOARD NEON BARU
 # --------------------------------------------------
-st.markdown("<h1 style='text-align: center; margin-bottom: 0;'>🌿 Smart Botanical Dashboard Kelompok 1 Hydrotech</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #52b788; font-weight: bold;'>Sistem Integrasi Monitoring Tanah & Analisis Kelayakan Panen Bayam Berbasis AI</p>", unsafe_allow_html=True)
-st.divider()
+st.markdown("""
+    <div class="header-neon-box">
+        <h1 style='margin: 0; padding-bottom: 5px; font-size: 32px;'>🌿 Smart Botanical Dashboard Kelompok: BRAZILEARN ONE HYDROTECH</h1>
+        <div style='color: #52b788; font-weight: bold; font-size: 16px;'>Sistem Integrasi Monitoring Tanah & Analisis Kelayakan Panen Bayam Berbasis AI</div>
+    </div>
+""", unsafe_allow_html=True)
 
 # ==================================
 # BAGIAN 1: MONITORING UTAMA & KONTROL POMPA
 # ==================================
-col_left, col_right = st.columns([2, 1])
+col_left, col_right = st.columns([1.8, 1.2])
 
 with col_left:
     st.subheader("📊 Kondisi Sensor Terkini")
     m1, m2, m3 = st.columns(3)
-    m1.metric("💧 Kelembapan Tanah", f"{data_terakhir['Kelembapan']}%")
+    m1.metric("💧 Kelembapan Tanah", f"{int(data_terakhir['Kelembapan'])}%")
     m2.metric("🌡️ Suhu Lingkungan", f"{data_terakhir['Suhu']}°C")
     m3.metric("🤖 Prediksi AI CNN", prediksi_status_tanah)
     
-    st.write("")
+    # Notifikasi rapi menggunakan komponen alert bawaan tanpa mengotori style p hancur
     if prediksi_status_tanah == "Basah":
         st.success("🌊 **Kondisi Tanah: BASAH** — Air di dalam tanah tercukupi dengan sangat baik.")
     elif prediksi_status_tanah == "Normal":
@@ -223,10 +245,10 @@ with col_right:
     if mode_pompa == "Otomatis (Sistem Pintar)":
         if prediksi_status_tanah == "Kering" or data_terakhir['Kelembapan'] < 40.0:
             status_pompa_aktif = "HIDUP"
-            notif_perintah = "🚨 ALERT: Deteksi tanah kering! Sistem otomatis mengirimkan sinyal instruksi: NYALAKAN POMPA AIR."
+            notif_perintah = "🚨 ALERT: Deteksi tanah kering! Sinyal otomatis: NYALAKAN POMPA AIR."
         else:
             status_pompa_aktif = "MATI"
-            notif_perintah = "✅ AMAN: Tanah dalam kondisi lembap/normal. Instruksi: MATIKAN POMPA AIR."
+            notif_perintah = "✅ AMAN: Tanah dalam kondisi ideal. Sinyal otomatis: MATIKAN POMPA AIR."
     else:
         saklar_manual = st.toggle("Aktifkan Pompa Secara Manual")
         if saklar_manual:
@@ -237,10 +259,10 @@ with col_right:
             notif_perintah = "⚠️ MANUAL OVERRIDE: Pompa dimatikan secara paksa oleh Pengguna."
 
     if status_pompa_aktif == "HIDUP":
-        st.markdown(f"<div style='background-color:#d8f3dc; border-left:6px solid #40916c; padding:12px; border-radius:5px;'><b>Status Aktuator Pompa:</b> <span style='color:#1b4332; font-weight:bold;'>🔵 RUNNING (MENYIRAM)</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background-color: rgba(40, 167, 69, 0.25); border-left:6px solid #00FF87; padding:12px; border-radius:5px; margin-bottom:10px;'><b style='color:#00FF87;'>Status Aktuator:</b> <span style='color:#fff; font-weight:bold;'>🔵 RUNNING (MENYIRAM)</span></div>", unsafe_allow_html=True)
         st.warning(notif_perintah)
     else:
-        st.markdown(f"<div style='background-color:#f8d7da; border-left:6px solid #dc3545; padding:12px; border-radius:5px;'><b>Status Aktuator Pompa:</b> <span style='color:#721c24; font-weight:bold;'>🔴 STANDBY (MATI)</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background-color: rgba(220, 53, 69, 0.25); border-left:6px solid #dc3545; padding:12px; border-radius:5px; margin-bottom:10px;'><b style='color:#ff8787;'>Status Aktuator:</b> <span style='color:#fff; font-weight:bold;'>🔴 STANDBY (MATI)</span></div>", unsafe_allow_html=True)
         st.info(notif_perintah)
 
 st.divider()
@@ -339,16 +361,14 @@ with tab_mingguan:
 st.divider()
 
 # ==================================
-# BAGIAN 4: DATA MENTAH EXCEL (TERBATAS SIKLUS HARIAN & REAL-TIME)
+# BAGIAN 4: DATA MENTAH EXCEL
 # ==================================
 st.subheader("📋 Data Mentah Excel Sensor Terurut (Real-Time)")
 st.markdown("Menampilkan log aktivitas **48 data terakhir (Siklus 24 Jam)** yang terus bergerak maju secara dinamis mengikuti pembacaan waktu aplikasi:")
 
-# Membatasi tampilan interface hanya ke 48 baris data terbaru (.head(48)) agar performa rendering tetap ngebut
 df_urut_realtime = data_tampil.sort_values(by="NO", ascending=False).head(48)
 st.dataframe(df_urut_realtime, use_container_width=True, height=350)
 
-# Menyediakan tombol unduh untuk mengekstrak data historis penuh (sampai 1440 baris) tanpa merusak kebersihan interface halaman utama
 csv_data = df.to_csv(index=False).encode('utf-8')
 st.download_button(
     label="📥 Unduh Seluruh Data Historis Eksperimen (Full 30 Hari / 1440 Data)",
