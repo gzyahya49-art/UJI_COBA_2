@@ -19,44 +19,66 @@ from streamlit_autorefresh import st_autorefresh
 from PIL import Image
 
 # ==================================
-# CONFIG STREAMLIT & CYBER FOREST THEME
+# CONFIG STREAMLIT & NATURAL ECO THEME
 # ==================================
 st.set_page_config(
-    page_title="NEO-FOREST: Bayam Brazil CNN-1D",
+    page_title="ECO-FOREST: Pemantauan Bayam Brazil",
     layout="wide"
 )
 
-# Custom Cyber Forest Dark Green & Neon CSS Injection
+# Custom Natural Botanical CSS Injection (Earthy & Clean Style)
 st.markdown("""
     <style>
+        /* Background Utama bertema Alam Teduh */
         .stApp {
-            background-color: #05160E;
-            color: #E0F2E9;
+            background-color: #F4F7F5;
+            color: #2C3E35;
         }
+        /* Judul Gaya Dokumentasi Ilmiah Modern */
         h1, h2, h3 {
-            color: #00FF87 !important;
-            text-shadow: 0 0 10px rgba(0, 255, 135, 0.3);
-            font-family: 'Courier New', monospace;
+            color: #1E4631 !important;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            font-weight: 600;
         }
+        /* Desain Card Metrik Seperti Lab Pertanian Modern */
         .stMetric {
-            background: rgba(10, 37, 24, 0.7);
-            border: 1px solid #00FF87;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 255, 135, 0.1);
+            background: #FFFFFF;
+            border: 1px solid #D2DDD7;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
         }
         div[data-testid="stMetricValue"] {
-            color: #00FF87 !important;
+            color: #2E6F40 !important;
+            font-weight: bold;
         }
+        /* Desain Sidebar Hijau Hutan Lindung */
         .sidebar .sidebar-content {
-            background-color: #030F0A;
+            background-color: #1E4631;
+            color: #EBF3EE;
         }
+        /* Box Laporan Hasil Komputasi Citra */
         .report-box {
-            background: rgba(10, 37, 24, 0.6);
-            border: 1px solid #00FF87;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 10px;
+            background: #FFFFFF;
+            border-left: 5px solid #2E6F40;
+            border-top: 1px solid #E2EAE5;
+            border-right: 1px solid #E2EAE5;
+            border-bottom: 1px solid #E2EAE5;
+            padding: 22px;
+            border-radius: 0px 8px 8px 0px;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(46, 111, 64, 0.05);
+            color: #2C3E35;
+            line-height: 1.6;
+        }
+        /* Mengubah warna font tab agar serasi */
+        button[data-baseweb="tab"] {
+            color: #556B5F !important;
+        }
+        button[aria-selected="true"] {
+            color: #1E4631 !important;
+            font-weight: bold !important;
+            border-bottom-color: #2E6F40 !important;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -80,7 +102,7 @@ def load_and_preprocess_all_data():
             target_file = bayam_files[0]
             df_raw = pd.read_excel(target_file) if target_file.endswith('.xlsx') else pd.read_csv(target_file)
         else:
-            raise FileNotFoundError("Gagal Menemukan file Dataset Bayam di repositori GitHub kamu.")
+            raise FileNotFoundError("Gagal Menemukan file Dataset Bayam di repositori komputer Anda.")
 
     if "NO" not in df_raw.columns and len(df_raw.columns) >= 7:
         df_raw = df_raw.copy()
@@ -148,26 +170,27 @@ model = train_cnn_model(X_all, y_all)
 # ==================================
 # NAVIGASI DASHBOARD (SIDEBAR)
 # ==================================
-st.sidebar.title("🌲 CYBER-FOREST OS")
-st.sidebar.subheader("Sistem Informasi Bayam Brazil")
+st.sidebar.title("🌿 ECO-FOREST SYSTEM")
+st.sidebar.subheader("Informasi Agronomi")
 st.sidebar.markdown("""
-**Bayam Brazil (*Alternanthera sissoo*)** adalah tanaman sayuran daun penutup tanah yang sangat adaptif. 
-- **Suhu Ideal:** 25°C - 30°C
-- **Kelembapan Aturan Sistem:**
-  -  `< 60%` : Kering
-  -  `60% - 70%` : Normal
-  -  `> 70%` : Basah
+**Bayam Brazil (*Alternanthera sissoo*)** adalah sayuran daun penutup tanah bernutrisi tinggi yang sangat adaptif. 
+
+* **Suhu Ideal Perkembangan:** 25°C - 30°C
+* **Standarisasi Kadar Air / Kelembapan:**
+  * `< 60%` : Kering
+  * `60% - 70%` : Normal / Optimal
+  * `> 70%` : Basah
 """)
 st.sidebar.write("---")
-st.sidebar.info("Sistem Auto-Refresh aktif mentransmisikan total 1440 data sensor secara sekuensial.")
+st.sidebar.info("Sistem Auto-Refresh memproses total 1440 data sensor secara sekuensial.")
 
 # ==================================
 # KONTEN UTAMA
 # ==================================
-st.title("⚡ NEO-MONITORING HYDROTECH // KELOMPOK 1")
-st.write("Sistem Pemantauan Cerdas Berbasis Aliran Data Realtime & Analisis Citra Kelayakan Panen.")
+st.title("🌱 Sistem Pemantauan & Analisis Citra Bayam Brazil")
+st.write("Integrasi Aliran Sensor Riil Terbuka dan Evaluasi Visual Komputasi Kesehatan Tanaman.")
 
-tab1, tab2 = st.tabs(["📟 Monitoring Node Realtime", "👁️ Analisis Citra Panen Berkas Lanjut"])
+tab1, tab2 = st.tabs(["📊 Pemantauan Nirkabel Seketika", "👁️ Analisis Citra Kesehatan Daun"])
 
 with tab1:
     counter = st_autorefresh(interval=1000, key="realtime_counter")
@@ -189,34 +212,36 @@ with tab1:
     kelas_pred = np.argmax(hasil_pred)
     prediksi_status = encoder.classes_[kelas_pred]
     
+    # Panel Informasi Utama (Bersih & Elegan)
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("KELEMBAPAN SENSOR", f"{data_terakhir['Kelembapan']}%")
+    c1.metric("KELEMBAPAN TANAH", f"{data_terakhir['Kelembapan']}%")
     c2.metric("SUHU LINGKUNGAN", f"{data_terakhir['Suhu']}°C")
-    c3.metric("STATUS AKTUAL ALAT", data_terakhir["Status_Tanah"])
-    c4.metric("PREDIKSI PINTAR CNN", prediksi_status)
+    c3.metric("KONDISI AKTUAL MEDIA", data_terakhir["Status_Tanah"])
+    c4.metric("PREDIKSI KLASIFIKASI CNN", prediksi_status)
     
     st.write("")
     if data_terakhir['Kelembapan'] > 70:
-        st.success(f"🌊 **[NODE-{data_terakhir['NO']}] KONDISI TANAH: BASAH ({data_terakhir['Kelembapan']}% > 70%)**")
+        st.success(f"🔹 **[Data Ke-{data_terakhir['NO']}] Status Media: BASAH ({data_terakhir['Kelembapan']}% > 70%)**")
     elif 60 <= data_terakhir['Kelembapan'] <= 70:
-        st.info(f"🌱 **[NODE-{data_terakhir['NO']}] KONDISI TANAH: NORMAL (60% - 70%)**")
+        st.info(f"🌿 **[Data Ke-{data_terakhir['NO']}] Status Media: OPTIMAL / NORMAL (60% - 70%)**")
     else:
-        st.error(f"☀️ **[NODE-{data_terakhir['NO']}] KONDISI TANAH: KERING ({data_terakhir['Kelembapan']}% < 60%) - Butuh Irigasi!**")
+        st.error(f"🔸 **[Data Ke-{data_terakhir['NO']}] Status Media: KERING ({data_terakhir['Kelembapan']}% < 60%) — Memerlukan Irigasi Tambahan**")
     st.write("")
     
+    # Grafik Bertema Alam (Warna Forest Green & Earthy Terracotta)
     g1, g2 = st.columns(2)
     with g1:
         fig1 = go.Figure()
         fig1.add_trace(go.Scatter(
             x=data_grafik["Waktu"].astype(str) + " (#" + data_grafik["NO"].astype(str) + ")", 
             y=data_grafik["Kelembapan"], mode="lines+markers", name="Kelembapan",
-            line=dict(color='#00FF87', width=2.5)
+            line=dict(color='#2E6F40', width=2.5)
         ))
         fig1.update_layout(
-            title="🎯 TREN REALTIME KELEMBAPAN TANAH (%)",
-            xaxis_title="Waktu (No Data)", yaxis_title="Kelembapan (%)",
-            paper_bgcolor='rgba(10,37,24,0.5)', plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#E0F2E9')
+            title="📈 Fluktuasi Kelembapan Tanah (%)",
+            xaxis_title="Waktu Pengukuran", yaxis_title="Persentase (%)",
+            paper_bgcolor='#FFFFFF', plot_bgcolor='#F9FBF9',
+            font=dict(color='#2C3E35')
         )
         st.plotly_chart(fig1, use_container_width=True)
         
@@ -225,118 +250,107 @@ with tab1:
         fig2.add_trace(go.Scatter(
             x=data_grafik["Waktu"].astype(str) + " (#" + data_grafik["NO"].astype(str) + ")", 
             y=data_grafik["Suhu"], mode="lines+markers", name="Suhu",
-            line=dict(color='#FF3B30', width=2.5)
+            line=dict(color='#C85A32', width=2.5)
         ))
         fig2.update_layout(
-            title="🌡️ TREN REALTIME SUHU UDARA (°C)",
-            xaxis_title="Waktu (No Data)", yaxis_title="Suhu (°C)",
-            paper_bgcolor='rgba(10,37,24,0.5)', plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#E0F2E9')
+            title="🌡️ Perkembangan Suhu Udara (°C)",
+            xaxis_title="Waktu Pengukuran", yaxis_title="Derajat Celcius (°C)",
+            paper_bgcolor='#FFFFFF', plot_bgcolor='#F9FBF9',
+            font=dict(color='#2C3E35')
         )
         st.plotly_chart(fig2, use_container_width=True)
         
-    st.subheader(f"📊 Aliran Matriks Realtime Berjalan (Data Saat Ini: {index_data} dari 1440)")
+    st.subheader(f"📋 Aliran Log Data Berjalan ({index_data} dari 1440 entri)")
     st.dataframe(data_tampil_all.sort_values(by="NO", ascending=False), use_container_width=True)
 
 
 # ==========================================================
-# PERBAIKAN & PENINGKATAN: TAB CITRA KOMPUTER LEBIH LENGKAP
+# TAB 2: CITRA KOMPUTER BERTEMA BOTANI & EKOLOGI ALAM
 # ==========================================================
 with tab2:
-    st.header("👁️ NEO-VISION: Analisis Komputasi Citra Tanaman")
-    st.write("Unggah foto makro daun Bayam Brazil Anda untuk mengekstrak visual matriks, persentase klorofil, dan laporan kelayakan panen agronomi.")
+    st.header("🔬 Analisis Spektrum Daun Komputasional")
+    st.write("Unggah dokumentasi foto makro untuk ekstraksi persentase jaringan sehat serta peta analisis biologis kelayakan panen.")
     
-    file_gambar = st.file_uploader("Unggah Foto Komponen Bayam Brazil (.png, .jpg, .jpeg)", type=["png", "jpg", "jpeg"])
+    file_gambar = st.file_uploader("Pilih Berkas Foto Bayam Brazil (.png, .jpg, .jpeg)", type=["png", "jpg", "jpeg"])
     
     if file_gambar is not None:
         img = Image.open(file_gambar)
-        
-        # Ekstraksi matriks piksel komputer untuk analisis lanjut
         img_np = np.array(img)
         
-        # Pengaman jika gambar grayscale
         if len(img_np.shape) == 3:
             r = img_np[:, :, 0].astype(float)
             g = img_np[:, :, 1].astype(float)
             b = img_np[:, :, 2].astype(float)
             
-            # Kalkulasi indeks segmentasi warna dasar tanaman
             total_pixel = img_np.shape[0] * img_np.shape[1]
             
-            # Piksel dominan hijau sehat (Nilai G lebih tinggi dari R dan B)
+            # Segmentasi warna daun alami
             green_mask = (g > r) & (g > b) & (g > 40)
-            # Piksel indikasi sakit/klorosis/bercak kuning-cokelat (R tinggi, G tinggi, B rendah)
             yellow_mask = (r > b) & (g > b) & (r > 60) & (g > 60) & (~green_mask)
             
             p_sehat = (np.sum(green_mask) / total_pixel) * 100
             p_sakit = (np.sum(yellow_mask) / total_pixel) * 100
             p_background = 100 - (p_sehat + p_sakit)
         else:
-            p_sehat, p_sakit, p_background = 80.0, 20.0, 0.0
+            p_sehat, p_sakit, p_background = 85.0, 15.0, 0.0
             
-        # Tampilan layout analisis
         col_img1, col_img2 = st.columns([1, 1.2])
         
         with col_img1:
-            st.image(img, caption="Sumber Citra Node Tanaman", use_container_width=True)
+            st.image(img, caption="Sampel Jaringan Vegetatif", use_container_width=True)
             
-            # Buat chart donat kontribusi visual warna daun
+            # Pie Chart Alami (Hijau Kebun, Kuning Daun Layu, Abu-abu Lembut)
             fig_pie = go.Figure(data=[go.Pie(
-                labels=['Piksel Hijau Sehat', 'Piksel Klorosis/Bercak', 'Latar Belakang/Lainnya'],
+                labels=['Jaringan Hijau Sehat', 'Gejala Klorosis/Bercak', 'Latar Belakang / Media'],
                 values=[p_sehat, p_sakit, p_background],
                 hole=.4,
-                marker=dict(colors=['#00FF87', '#FF3B30', '#4A4A4A'])
+                marker=dict(colors=['#3B824E', '#D1A153', '#A0AFA6'])
             )])
             fig_pie.update_layout(
-                title="📊 Komposisi Ekstraksi Warna Citra",
+                title="📊 Segmentasi Komposisi Kromatografi Citra",
                 paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='#E0F2E9'),
+                font=dict(color='#2C3E35'),
                 showlegend=True,
                 height=300
             )
             st.plotly_chart(fig_pie, use_container_width=True)
             
         with col_img2:
-            st.markdown("### 🧬 Laporan Ekstraksi Agronomi & Kelayakan")
+            st.markdown("### 📋 Laporan Fisiologis & Rekomendasi Agronomis")
             
-            # Penentuan Keputusan Berdasarkan Hasil Ekstraksi Citra Luas Daun Sehat
             if p_sehat >= 50.0:
-                st.markdown("<h3 style='color: #00FF87; margin-top:0;'>STATUS: LAYAK PANEN ✅</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='color: #2E6F40; margin-top:0;'>KESIMPULAN: VEGETASI OPTIMAL (SIAP PANEN)</h3>", unsafe_allow_html=True)
                 
-                # Kotak Laporan Informasi Detil
                 st.markdown(f"""
                 <div class="report-box">
-                    <strong>📈 HASIL METRIK COMPUTER VISION:</strong><br>
-                    • Persentase Area Daun Sehat (Klorofil Tinggi): <span style="color:#00FF87;">{p_sehat:.2f}%</span><br>
-                    • Persentase Area Defisiensi/Penyakit: <span style="color:#FF3B30;">{p_sakit:.2f}%</span><br><br>
-                    <strong>📝 REKOMENDASI SISTEM BUDIDAYA:</strong><br>
-                    1. Tanaman memiliki indeks kerapatan vegetasi (NDVI) yang tinggi dan rimbun sempurna.<br>
-                    2. Kandungan fitokimia antioksidan dan zat besi dalam daun berada dalam kadar puncak komersial.<br>
-                    3. Pemotongan/pemanenan dapat segera dilakukan secara selektif dengan menyisakan 3-4 helai daun bawah agar tanaman dapat bertunas kembali.
+                    <strong>📊 DATA SPASIAL KOMPUTASI:</strong><br>
+                    • Estimasi Area Klorofil Aktif: <span style="color:#2E6F40; font-weight:bold;">{p_sehat:.2f}%</span><br>
+                    • Rasio Jaringan Terdegradasi: <span style="color:#A47124;">{p_sakit:.2f}%</span><br><br>
+                    <strong>🌱 REKOMENDASI PEMANENAN:</strong><br>
+                    1. Karakteristik indeks kanopi menunjukkan akumulasi nutrisi dan klorofil di tingkat puncak pemasaran.<br>
+                    2. Pemanenan disarankan menggunakan teknik rotasi daun: potong tangkai luar tua dan sisakan pusat tunas dalam agar perkembangan berikutnya tetap produktif.
                 </div>
                 """, unsafe_allow_html=True)
             else:
-                st.markdown("<h3 style='color: #FF3B30; margin-top:0;'>STATUS: BELUM LAYAK PANEN ⚠️</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='color: #A47124; margin-top:0;'>KESIMPULAN: PERLU PERAWATAN INTENSIF (TUNDA PANEN)</h3>", unsafe_allow_html=True)
                 
                 st.markdown(f"""
                 <div class="report-box">
-                    <strong>📈 HASIL METRIK COMPUTER VISION:</strong><br>
-                    • Persentase Area Daun Sehat (Klorofil Tinggi): <span style="color:#00FF87;">{p_sehat:.2f}%</span><br>
-                    • Persentase Area Defisiensi/Penyakit: <span style="color:#FF3B30;">{p_sakit:.2f}%</span><br><br>
-                    <strong>❌ GEJALA KLINIS YANG TERDETEKSI:</strong><br>
-                    • Bercak kuning/cokelat yang tinggi mengindikasikan tanaman mengalami <em>Klorosis</em> (kehilangan klorofil) akibat ketidakseimbangan kelembapan media tanam atau serangan hama kutu daun.<br><br>
-                    <strong>🛠️ TINDAKAN PERBAIKAN (ACTION PLAN):</strong><br>
-                    1. <strong>Sistem Irigasi:</strong> Sinkronisasikan dengan tab monitoring realtime. Jika grafik historis tanah berstatus <span style="color:#FF3B30;">Kering</span>, tingkatkan debit air.<br>
-                    2. <strong>Nutrisi:</strong> Berikan pupuk nitrogen tinggi (misal pupuk organik cair daun) untuk memicu regenerasi sel hijau daun.<br>
-                    3. Karantina pot tanaman ini dari jangkauan tanaman sehat lainnya untuk meminimalkan penyebaran patogen.
+                    <strong>📊 DATA SPASIAL KOMPUTASI:</strong><br>
+                    • Estimasi Area Klorofil Aktif: <span style="color:#2E6F40; font-weight:bold;">{p_sehat:.2f}%</span><br>
+                    • Rasio Jaringan Terdegradasi: <span style="color:#A47124; font-weight:bold;">{p_sakit:.2f}%</span><br><br>
+                    <strong>⚠️ ANALISIS GEJALA FISIK:</strong><br>
+                    • Tingginya bercak kuning menandakan berkurangnya konsentrasi zat klorofil akibat paparan panas ekstrem atau defisiensi unsur hara makro (seperti Nitrogen/Magnesium).<br><br>
+                    <strong>🛠️ PLAN REGENERASI TANAMAN:</strong><br>
+                    1. Sesuaikan pengairan dengan melihat status kelembapan pada dashboard utama.<br>
+                    2. Aplikasikan pupuk cair organik kaya senyawa nitrogen guna meregenerasi jaringan klorofil baru.
                 </div>
                 """, unsafe_allow_html=True)
                 
-            # Metrik card tambahan untuk nilai estetika dashboard cyber
             st.write("")
             m1, m2 = st.columns(2)
             m1.metric("Kepadatan Klorofil Est.", f"{p_sehat * 1.2:.1f} SPAD")
-            m2.metric("Tingkat Keparahan Hama", f"{p_sakit:.1f}%")
+            m2.metric("Tingkat Penyakit Daun", f"{p_sakit:.1f}%")
 
     st.write("---")
     st.subheader("📋 Arsip Statis: 50 Data Excel Awal Master Dataset")
