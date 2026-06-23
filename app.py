@@ -168,7 +168,7 @@ st.markdown("""
 
 def load_and_preprocess_all_data():
 
-    df_raw = pd.read_excel("Data_Bayam_1440 2026.xlsx", header=1)
+    df_raw = pd.read_excel("Log_Data_Bayam_Brazil_1440_2026.xlsx", header=1)
 
     df_raw.columns = ["NO", "Hari", "Tanggal", "Waktu", "Kelembapan", "Suhu", "Status_Tanah"]
 
