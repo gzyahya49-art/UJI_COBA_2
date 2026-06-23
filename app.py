@@ -208,9 +208,7 @@ def render_realtime_dashboard():
     index_data = (st.session_state.live_counter % len(df)) + window
     data_tampil = df.iloc[:index_data]
     data_terakhir = data_tampil.iloc[-1]
-    
-    # 🌟 DIUBAH: Menggunakan semua data berjalan dari awal hingga baris saat ini (bisa sampai 1440 data)
-    data_grafik = data_tampil 
+    data_grafik = data_tampil.tail(50) 
 
     # Jalankan Prediksi Realtime CNN-1D
     sample_raw = data_tampil[["Kelembapan", "Suhu"]].iloc[-window:]
@@ -241,6 +239,7 @@ def render_realtime_dashboard():
 
     with col_right:
         st.subheader("⚙️ Panel Pompa Otomatis (Real-Time)")
+        # Menggunakan parameter key agar komponen widget aman di dalam fragment loop
         mode_pompa = st.radio("Pilih Mode Sistem:", ["Otomatis (Sistem Pintar)", "Manual (Override)"], horizontal=True, key="mode_pompa_key")
         
         status_pompa_aktif = "MATI"
@@ -314,27 +313,25 @@ def render_realtime_dashboard():
 
     st.divider()
 
-    # --- BAGIAN 3 & 4: VISUALISASI TREN (MEMUAT SEMUA DATA) ---
+    # --- BAGIAN 3 & 4: DIBUNGKUS WADAH LATAR BELAKANG HALUS (CUSTOM BOX) ---
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
     
     st.subheader("📈 Visualisasi Tren Parameter Lingkungan Berjalan")
-    tab_jam, tab_harian, tab_mingguan = st.tabs(["🕒 Tren Real-time (Semua Data Berjalan)", "📅 Tren Harian", "📆 Ringkasan Mingguan"])
+    tab_jam, tab_harian, tab_mingguan = st.tabs(["🕒 Tren Jam (50 Data Terakhir)", "📅 Tren Harian", "📆 Ringkasan Mingguan"])
 
     with tab_jam:
         g1, g2 = st.columns(2)
         with g1:
             fig1 = go.Figure()
-            # 🌟 DIUBAH: mode="lines" untuk menghilangkan bulatan hitam marker agar grafik 1440 data tetap mulus & ringan
             fig1.add_trace(go.Scatter(x=data_grafik["Waktu"].astype(str) + " (" + data_grafik["NO"].astype(str) + ")", 
-                                      y=data_grafik["Kelembapan"], mode="lines", name="Kelembapan", line=dict(color='#00FF87', width=1.5)))
+                                      y=data_grafik["Kelembapan"], mode="lines+markers", name="Kelembapan", line=dict(color='#00FF87', width=2)))
             fig1.update_layout(title="Tren Realtime Kelembapan Tanah (%)", xaxis_title="Waktu (No Data)", yaxis_title="Kelembapan (%)", template="plotly_dark", margin=dict(l=20, r=20, t=40, b=20))
             st.plotly_chart(fig1, use_container_width=True)
             
         with g2:
             fig2 = go.Figure()
-            # 🌟 DIUBAH: mode="lines" untuk menghilangkan bulatan hitam marker agar grafik 1440 data tetap mulus & ringan
             fig2.add_trace(go.Scatter(x=data_grafik["Waktu"].astype(str) + " (" + data_grafik["NO"].astype(str) + ")", 
-                                      y=data_grafik["Suhu"], mode="lines", name="Suhu", line=dict(color='#d90429', width=1.5)))
+                                      y=data_grafik["Suhu"], mode="lines+markers", name="Suhu", line=dict(color='#d90429', width=2)))
             fig2.update_layout(title="Tren Realtime Suhu Udara (°C)", xaxis_title="Waktu (No Data)", yaxis_title="Suhu (°C)", template="plotly_dark", margin=dict(l=20, r=20, t=40, b=20))
             st.plotly_chart(fig2, use_container_width=True)
 
@@ -357,7 +354,7 @@ def render_realtime_dashboard():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- BAGIAN 4: DATA MENTAH ---
+    # --- BAGIAN 4: DATA MENTAH DIBUNGKUS WADAH JUGA ---
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
     st.subheader("📋 Data Mentah Excel Sensor Terurut (Real-Time)")
     
