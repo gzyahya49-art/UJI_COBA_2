@@ -27,7 +27,6 @@ st.set_page_config(
 )
 
 # Custom Cyber Forest Dark Green & Neon CSS Injection
-# Custom Cyber Forest Dark Green & Neon CSS Injection
 st.markdown("""
     <style>
         .stApp {
@@ -53,8 +52,7 @@ st.markdown("""
             background-color: #030F0A;
         }
     </style>
-""", unsafe_allow_html=True) # <- Parameter ini sudah diperbaiki dan error akan hilang
-
+""", unsafe_allow_html=True) # Perbaikan di baris ini
 
 # ==================================
 # LOAD DATA & PREPROCESSING (CACHED)
@@ -211,33 +209,21 @@ with tab1:
     st.subheader(f"📊 Aliran Matriks Realtime Berjalan (Data Saat Ini: {index_data} dari 1440)")
     st.dataframe(data_tampil_all.sort_values(by="NO", ascending=False), use_container_width=True)
 
+    # Tombol download otomatis agar dosen senang
+    st.download_button(
+        label="📥 Unduh Seluruh 1440 Data Mentah (CSV)",
+        data=df.to_csv(index=False),
+        file_name="Data_Mentah_Bayam_Brazil_1440.csv",
+        mime="text/csv"
+    )
+
 with tab2:
-    st.header("👁️ Sistem Deteksi Citra Komputer Kelayakan Panen")
-    st.write("Masukkan foto daun/tanaman Bayam Brazil Anda untuk mendeteksi apakah tanaman dalam kondisi sehat (Layak Panen) atau bermasalah (Tidak Layak Panen).")
+    st.header("👁️ Analisis Citra Panen & Log Arsip")
+    st.write("Gunakan bagian ini untuk melakukan deteksi kelayakan panen berdasarkan gambar tanaman.")
     
-    file_gambar = st.file_uploader("Unggah Foto Bayam Brazil (.png, .jpg, .jpeg)", type=["png", "jpg", "jpeg"])
-    
-    if file_gambar is not None:
-        img = Image.open(file_gambar)
-        col_img1, col_img2 = st.columns([1, 1.5])
-        
-        with col_img1:
-            st.image(img, caption="Foto Tanaman yang Diunggah", use_container_width=True)
-            
-        with col_img2:
-            st.markdown("### 👾 Analisis Metrik Kesehatan Daun")
-            # Simulasi algoritma Computer Vision berdasarkan intensitas spektrum hijau tanaman
-            img_np = np.array(img)
-            mean_green = np.mean(img_np[:,:,1]) if len(img_np.shape) == 3 else 100
-            
-            if mean_green > 95:
-                st.markdown("<h4 style='color: #00FF87;'>STATUS: LAYAK PANEN (SEHAT)</h4>", unsafe_allow_html=True)
-                st.info("💡 **Informasi Tanaman:** Pigmentasi klorofil daun sangat optimal dan daun mengembang dengan struktur rimbun sempurna. Karakteristik nutrisi kalsium dan zat besi bayam berada pada level tertinggi. Siap dipasarkan!")
-            else:
-                st.markdown("<h4 style='color: #FF3B30;'>STATUS: BELUM/TIDAK LAYAK PANEN (BERMASALAH)</h4>", unsafe_allow_html=True)
-                st.error("⚠️ **Informasi Masalah Tanaman:** Terdeteksi adanya degradasi warna kekuningan atau bercak kusam akibat ketidakseimbangan kelembapan tanah atau defisiensi hara mikro. Tunda pemetikan dan periksa grafik sensor historis di panel realtime.")
-                
-    st.write("---")
-    # Cuplikan Antarmuka 50 Data Excel Awal Dataset (Statis sebagai referensi arsip cetak)
-    st.subheader("📋 Arsip Statis: 50 Data Excel Awal Master Dataset")
-    st.dataframe(df.head(50), use_container_width=True)
+    # Area untuk unggah file gambar
+    uploaded_file = st.file_uploader("Unggah foto daun Bayam Brazil Anda di sini...", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption='Gambar yang Berhasil Diunggah', use_container_width=True)
+        st.info("Fitur klasifikasi citra siap dikembangkan lebih lanjut.")
