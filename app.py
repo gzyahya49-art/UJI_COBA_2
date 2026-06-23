@@ -135,7 +135,7 @@ prediksi_status_tanah = encoder.classes_[kelas_pred]
 # --------------------------------------------------
 st.markdown("<h1 style='text-align: center; margin-bottom: 0;'>🌿 Smart Botanical Dashboard Kelompok 1 Hydrotech</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #52b788; font-weight: bold;'>Sistem Integrasi Monitoring Tanah & Analisis Kelayakan Panen Bayam Berbasis AI</p>", unsafe_allow_html=True)
-st.hr()
+st.divider()
 
 # ==================================
 # BAGIAN 1: MONITORING UTAMA & KONTROL POMPA
