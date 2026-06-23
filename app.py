@@ -191,7 +191,7 @@ with col_right:
         st.markdown(f"<div style='background-color:#f8d7da; border-left:6px solid #dc3545; padding:12px; border-radius:5px;'><b>Status Aktuator Pompa:</b> <span style='color:#721c24; font-weight:bold;'>🔴 STANDBY (MATI)</span></div>", unsafe_allow_html=True)
         st.info(notif_perintah)
 
-st.hr()
+st.divider()
 
 # ==================================
 # BAGIAN 2: DETEKSI CITRA DAUN (ANALISIS PANEN)
