@@ -27,6 +27,7 @@ st.set_page_config(
 )
 
 # Custom Cyber Forest Dark Green & Neon CSS Injection
+# Custom Cyber Forest Dark Green & Neon CSS Injection
 st.markdown("""
     <style>
         .stApp {
@@ -52,7 +53,8 @@ st.markdown("""
             background-color: #030F0A;
         }
     </style>
-""", unsafe_style=class_name)
+""", unsafe_allow_html=True) # <- Parameter ini sudah diperbaiki dan error akan hilang
+
 
 # ==================================
 # LOAD DATA & PREPROCESSING (CACHED)
