@@ -60,7 +60,7 @@ st.markdown("""
 @st.cache_data
 def load_and_preprocess_all_data():
     # Mekanisme Auto-Detect File untuk menghindari FileNotFoundError di Streamlit Cloud
-    file_xlsx = "Data_Bayam_1440 2026.xlsx"
+    file_xlsx = "Log_Data_Bayam_Brazil_1440_2026.xlsx"
     file_csv_alt = "Data_Bayam_1440 2026.xlsx - Sheet1.csv"
     
     if os.path.exists(file_xlsx):
