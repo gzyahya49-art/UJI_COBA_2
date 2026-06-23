@@ -22,6 +22,14 @@ from PIL import Image
 # ==================================
 # CONFIG & THEME STREAMLIT (Satu Halaman Tunggal)
 # ==================================
+Agar semua teks di halaman (termasuk deskripsi, tulisan di dalam tab, instruksi file uploader, dan teks biasa) yang sebelumnya tidak terlihat/samar karena tertutup gambar background menjadi terlihat sangat jelas, kita bisa menambahkan latar belakang kotak transparan berwarna gelap-neon di setiap elemen teks tersebut melalui CSS.
+
+Berikut adalah perbaikan kode CSS pada bagian atas aplikasi Anda. Silakan ganti blok st.markdown bagian CSS di kode Anda dengan potongan kode di bawah ini:
+
+Python
+# ==================================
+# CONFIG & THEME STREAMLIT (Satu Halaman Tunggal)
+# ==================================
 st.set_page_config(
     page_title="Sistem Monitoring & Analisis Bayam - Hydrotech 1",
     layout="wide",
@@ -30,56 +38,82 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Pengaturan Background Utama (Menggunakan gambar milikmu) */
+    /* 1. Pengaturan Background Utama */
     [data-testid="stAppViewContainer"] {
         background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSD0MnK0fOm6BBdgWVGHh5DLgsyBqppShq37ytsMvqEQ&s=10') no-repeat center/cover;
     }
     
-    /* Membuat area kerja utama transparan gelap agar gambar background terlihat */
+    /* Lapisan transparan agar background luar tidak terlalu menusuk mata */
     [data-testid="stHeader"], [data-testid="stMainBlockContainer"] {
-        background-color: rgba(10, 25, 18, 0.2) !important;
+        background-color: rgba(6, 14, 10, 0.4) !important;
     }
 
-    /* 2. Mengubah semua teks heading (H1, H2, H3) menjadi HIJAU NEON TERANG */
+    /* 2. Heading (H1, H2, H3) Hijau Neon Terang Berpendar */
     h1, h2, h3, [data-testid="stMarkdownContainer"] h1, [data-testid="stMarkdownContainer"] h2, [data-testid="stMarkdownContainer"] h3 {
         color: #00FF87 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-shadow: 0 0 10px rgba(0, 255, 135, 0.6); /* Efek pendaran neon */
+        text-shadow: 0 0 10px rgba(0, 255, 135, 0.6);
     }
     
-    /* Mengubah teks subheader bawaan Streamlit */
     .stHeadingContainer h2, .stHeadingContainer h3 {
         color: #00FF87 !important;
     }
 
-    /* 3. Pengaturan Kotak Metrik (Latar abu-abu gelap dengan border neon) */
+    /* 3. MENAMBAHKAN BACKGROUND NEON UNTUK SEMUA TEKS BIASA / DESKRIPSI AGAR NAMPAK KELUAR */
+    [data-testid="stMarkdownContainer"] p, 
+    [data-testid="stWidgetLabel"] p, 
+    .stSelectbox p, 
+    .stSlider p, 
+    div[data-testid="stAlert"] p,
+    span[data-testid="stTextAreaWidgetApiKeyCounter"] {
+        background-color: rgba(12, 28, 20, 0.85) !important; /* Kotak gelap berkabut */
+        color: #e0f2e9 !important; /* Teks putih kehijauan cerah */
+        padding: 6px 12px;
+        border-radius: 6px;
+        border-left: 3px solid #00FF87; /* Garis aksen neon di kiri teks */
+        box-shadow: 0 0 8px rgba(0, 255, 135, 0.2);
+        display: inline-block; /* Menyesuaikan lebar kotak dengan panjang teks */
+        margin-bottom: 4px;
+    }
+
+    /* 4. Perbaikan Teks di Dalam Struktur Tab */
+    button[data-baseweb="tab"] p {
+        background-color: transparent !important; /* Menjaga teks judul tab tetap bersih */
+        color: #00FF87 !important;
+        text-shadow: 0 0 5px rgba(0, 255, 135, 0.4);
+    }
+    
+    /* 5. Pengaturan Kotak Metrik (Latar abu-abu gelap dengan border neon) */
     .stMetric {
-        background-color: rgba(28, 43, 36, 0.85) !important; /* Abu-abu kehijauan gelap */
+        background-color: rgba(20, 38, 30, 0.9) !important;
         padding: 15px;
         border-radius: 12px;
         border-left: 5px solid #00FF87 !important;
-        box-shadow: 0 0 15px rgba(0, 255, 135, 0.3) !important;
+        box-shadow: 0 0 15px rgba(0, 255, 135, 0.4) !important;
     }
     
-    /* Teks Angka/Nilai Metrik menjadi Hijau Neon Terang */
+    /* Nilai Angka Metrik */
     div[data-testid="stMetricValue"] {
         color: #00FF87 !important;
         text-shadow: 0 0 12px rgba(0, 255, 135, 0.8) !important;
         font-weight: bold;
     }
 
-    /* Teks Judul/Label Metrik di atas Angka */
+    /* Judul Atas Metrik */
     div[data-testid="stMetricLabel"] p {
+        background-color: transparent !important; /* Supaya tidak double kotak di dalam metrik */
+        border-left: none !important;
+        box-shadow: none !important;
         color: #e0f2e9 !important;
         font-weight: bold;
+        padding: 0 !important;
     }
     
-    /* 4. Pengganti komponen kartu status */
-    .status-card {
-        padding: 20px;
+    /* 6. Kotak Dropzone File Uploader */
+    [data-testid="stFileUploaderDropzone"] {
+        background-color: rgba(15, 32, 24, 0.85) !important;
+        border: 2px dashed #00FF87 !important;
         border-radius: 10px;
-        margin-bottom: 20px;
-        background-color: rgba(20, 35, 28, 0.8);
     }
     </style>
 """, unsafe_allow_html=True)
