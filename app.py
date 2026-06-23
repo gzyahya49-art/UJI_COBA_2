@@ -26,13 +26,41 @@ st.set_page_config(
     layout="wide"
 )
 
+# Custom Cyber Forest Dark Green & Neon CSS Injection
+st.markdown("""
+    <style>
+        .stApp {
+            background-color: #05160E;
+            color: #E0F2E9;
+        }
+        h1, h2, h3 {
+            color: #00FF87 !important;
+            text-shadow: 0 0 10px rgba(0, 255, 135, 0.3);
+            font-family: 'Courier New', monospace;
+        }
+        .stMetric {
+            background: rgba(10, 37, 24, 0.7);
+            border: 1px solid #00FF87;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 255, 135, 0.1);
+        }
+        div[data-testid="stMetricValue"] {
+            color: #00FF87 !important;
+        }
+        .sidebar .sidebar-content {
+            background-color: #030F0A;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # ==================================
 # LOAD DATA & PREPROCESSING (CACHED)
 # ==================================
 @st.cache_data
 def load_and_preprocess_all_data():
-    # Menggunakan CSV hasil ekstraksi untuk kecepatan eksekusi realtime
-    df_raw = pd.read_csv("Data_Bayam_1440 2026.xlsx")
+    # PERBAIKAN: Membaca file CSV hasil ekstraksi dengan nama yang tepat
+    df_raw = pd.read_csv("Data_Bayam_1440 2026.xlsx - Sheet1.csv")
     df_raw.columns = ["NO", "Hari", "Tanggal", "Waktu", "Kelembapan", "Suhu", "Status_Tanah"]
     
     df_raw["Kelembapan"] = pd.to_numeric(df_raw["Kelembapan"], errors="coerce")
@@ -196,7 +224,6 @@ with tab2:
             
         with col_img2:
             st.markdown("### 👾 Analisis Metrik Kesehatan Daun")
-            # Simulasi algoritma Computer Vision berdasarkan intensitas spektrum hijau tanaman
             img_np = np.array(img)
             mean_green = np.mean(img_np[:,:,1]) if len(img_np.shape) == 3 else 100
             
@@ -208,6 +235,6 @@ with tab2:
                 st.error("⚠️ **Informasi Masalah Tanaman:** Terdeteksi adanya degradasi warna kekuningan atau bercak kusam akibat ketidakseimbangan kelembapan tanah atau defisiensi hara mikro. Tunda pemetikan dan periksa grafik sensor historis di panel realtime.")
                 
     st.write("---")
-    # Cuplikan Antarmuka 50 Data Excel Awal Dataset (Statis sebagai referensi arsip cetak)
+    # PERBAIKAN: Menampilkan antarmuka 50 data excel awal dataset teratas secara statis
     st.subheader("📋 Arsip Statis: 50 Data Excel Awal Master Dataset")
     st.dataframe(df.head(50), use_container_width=True)
