@@ -186,36 +186,25 @@ with col_left:
 with col_right:
     st.subheader("⚙️ Panel Pompa Otomatis (Real-Time)")
     
-    # Mode Operasi Pompa
-    mode_pompa = st.radio("Pilih Mode Sistem:", ["Otomatis (Sistem Pintar)", "Manual (Override)"], horizontal=True)
-    
+    # --- PILIHAN MODE MANUAL DIHAPUS, SISTEM OTOMATIS MURNI ---
     status_pompa_aktif = "MATI"
     notif_perintah = "Sistem dalam kondisi aman dan seimbang."
     
-    if mode_pompa == "Otomatis (Sistem Pintar)":
-        if prediksi_status_tanah == "Kering" or data_terakhir['Kelembapan'] < 40.0:
-            status_pompa_aktif = "HIDUP"
-            notif_perintah = "🚨 ALERT: Deteksi tanah kering! Sistem otomatis mengirimkan sinyal instruksi: NYALAKAN POMPA AIR."
-        else:
-            status_pompa_aktif = "MATI"
-            notif_perintah = "✅ AMAN: Tanah dalam kondisi lembap/normal. Instruksi: MATIKAN POMPA AIR."
+    # Logika otomatis berbasis prediksi AI CNN dan ambang batas sensor
+    if prediksi_status_tanah == "Kering" or data_terakhir['Kelembapan'] < 40.0:
+        status_pompa_aktif = "HIDUP"
+        notif_perintah = "🚨 ALERT: Deteksi tanah kering! Sistem otomatis mengirimkan sinyal instruksi: NYALAKAN POMPA AIR."
     else:
-        saklar_manual = st.toggle("Aktifkan Pompa Secara Manual")
-        if saklar_manual:
-            status_pompa_aktif = "HIDUP"
-            notif_perintah = "⚠️ MANUAL OVERRIDE: Pompa dinyalakan secara paksa oleh Pengguna."
-        else:
-            status_pompa_aktif = "MATI"
-            notif_perintah = "⚠️ MANUAL OVERRIDE: Pompa dimatikan secara paksa oleh Pengguna."
+        status_pompa_aktif = "MATI"
+        notif_perintah = "✅ AMAN: Tanah dalam kondisi lembap/normal. Instruksi: MATIKAN POMPA AIR."
 
-    # Tampilan Visual Status Pompa
+    # Tampilan Visual Status Pompa (Tetap mempertahankan style asli)
     if status_pompa_aktif == "HIDUP":
         st.markdown(f"<div style='background-color:#d8f3dc; border-left:6px solid #40916c; padding:12px; border-radius:5px;'><b>Status Aktuator Pompa:</b> <span style='color:#1b4332; font-weight:bold;'>🔵 RUNNING (MENYIRAM)</span></div>", unsafe_allow_html=True)
         st.warning(notif_perintah)
     else:
         st.markdown(f"<div style='background-color:#f8d7da; border-left:6px solid #dc3545; padding:12px; border-radius:5px;'><b>Status Aktuator Pompa:</b> <span style='color:#721c24; font-weight:bold;'>🔴 STANDBY (MATI)</span></div>", unsafe_allow_html=True)
         st.info(notif_perintah)
-
 st.divider()
 
 # ==================================
