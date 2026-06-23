@@ -32,7 +32,7 @@ st.set_page_config(
 @st.cache_data
 def load_and_preprocess_all_data():
     # Menggunakan CSV hasil ekstraksi untuk kecepatan eksekusi realtime
-    df_raw = pd.read_csv("Data_Bayam_1440 2026.xlsx - Sheet1.csv")
+    df_raw = pd.read_csv("Data_Bayam_1440 2026.xlsx")
     df_raw.columns = ["NO", "Hari", "Tanggal", "Waktu", "Kelembapan", "Suhu", "Status_Tanah"]
     
     df_raw["Kelembapan"] = pd.to_numeric(df_raw["Kelembapan"], errors="coerce")
