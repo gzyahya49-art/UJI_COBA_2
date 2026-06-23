@@ -22,23 +22,30 @@ from PIL import Image
 # ==================================
 # CONFIG & THEME STREAMLIT (Satu Halaman Tunggal)
 # ==================================
+st.set_page_config(
+    page_title="Sistem Monitoring & Analisis Bayam - Hydrotech 1",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Custom CSS untuk menyuntikkan tema tanaman daun alami + aksen neon terang
 st.markdown("""
     <style>
-    /* 1. Pengaturan Background Utama (Menggunakan gambar milikmu) */
+    /* 1. Pengaturan Background Utama Terang Tanpa Transparan Gelap */
     [data-testid="stAppViewContainer"] {
         background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSD0MnK0fOm6BBdgWVGHh5DLgsyBqppShq37ytsMvqEQ&s=10') no-repeat center/cover;
     }
     
-    /* Membuat area kerja utama transparan gelap agar gambar background terlihat */
+    /* Mengaktifkan area kerja utama agar sepenuhnya bersih/terang mengikuti gambar dasar */
     [data-testid="stHeader"], [data-testid="stMainBlockContainer"] {
-        background-color: rgba(10, 25, 18, 0.6) !important;
+        background-color: rgba(255, 255, 255, 0.15) !important;
     }
 
-    /* 2. Mengubah semua teks heading (H1, H2, H3) menjadi HIKAU NEON TERANG */
+    /* 2. Mengubah semua teks heading (H1, H2, H3) menjadi HIJAU NEON TERANG */
     h1, h2, h3, [data-testid="stMarkdownContainer"] h1, [data-testid="stMarkdownContainer"] h2, [data-testid="stMarkdownContainer"] h3 {
         color: #00FF87 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-shadow: 0 0 10px rgba(0, 255, 135, 0.5); /* Efek pendaran neon */
+        text-shadow: 0 0 10px rgba(0, 255, 135, 0.7); /* Efek pendaran neon tajam */
     }
     
     /* Mengubah teks subheader bawaan Streamlit */
@@ -46,9 +53,9 @@ st.markdown("""
         color: #00FF87 !important;
     }
 
-    /* 3. Pengaturan Kotak Metrik (Latar abu-abu gelap dengan border neon) */
+    /* 3. Pengaturan Kotak Metrik (Latar abu-abu kehijauan gelap solid agar angka neon terbaca kontras) */
     .stMetric {
-        background-color: rgba(28, 43, 36, 0.85) !important; /* Abu-abu kehijauan gelap */
+        background-color: rgba(28, 43, 36, 0.9) !important; 
         padding: 15px;
         border-radius: 12px;
         border-left: 5px solid #00FF87 !important;
@@ -136,14 +143,13 @@ model = train_cnn_model(X_all, y_all)
 # ==================================
 # SISTEM LOGIK LOGIS & SIMULASI REAL-TIME
 # ==================================
-# Auto-refresh setiap 2 detik agar user sempat membaca data perubahan
 counter = st_autorefresh(interval=2000, key="realtime_counter")
 
 window = 6
 index_data = (counter % len(df)) + window
 data_tampil = df.iloc[:index_data]
 data_terakhir = data_tampil.iloc[-1]
-data_grafik = data_tampil.tail(50) # Batasi 50 data terakhir untuk pergerakan visual grafik
+data_grafik = data_tampil.tail(50) 
 
 # Jalankan Prediksi Realtime CNN-1D
 sample_raw = data_tampil[["Kelembapan", "Suhu"]].iloc[-window:]
@@ -174,7 +180,6 @@ with col_left:
     m2.metric("🌡️ Suhu Lingkungan", f"{data_terakhir['Suhu']}°C")
     m3.metric("🤖 Prediksi AI CNN", prediksi_status_tanah)
     
-    # Status Alert Tanah
     st.write("")
     if prediksi_status_tanah == "Basah":
         st.success("🌊 **Kondisi Tanah: BASAH** — Air di dalam tanah tercukupi dengan sangat baik.")
@@ -186,27 +191,16 @@ with col_left:
 with col_right:
     st.subheader("⚙️ Panel Pompa Otomatis (Real-Time)")
     
-    # Mode Operasi Pompa
-    mode_pompa = st.radio("Pilih Mode Sistem:", ["Otomatis (Sistem Pintar)", "Manual (Override)"], horizontal=True)
-    
+    # Menghapus sistem radio manual switch, langsung otomatis murni memakai logika AI
     status_pompa_aktif = "MATI"
     notif_perintah = "Sistem dalam kondisi aman dan seimbang."
     
-    if mode_pompa == "Otomatis (Sistem Pintar)":
-        if prediksi_status_tanah == "Kering" or data_terakhir['Kelembapan'] < 40.0:
-            status_pompa_aktif = "HIDUP"
-            notif_perintah = "🚨 ALERT: Deteksi tanah kering! Sistem otomatis mengirimkan sinyal instruksi: NYALAKAN POMPA AIR."
-        else:
-            status_pompa_aktif = "MATI"
-            notif_perintah = "✅ AMAN: Tanah dalam kondisi lembap/normal. Instruksi: MATIKAN POMPA AIR."
+    if prediksi_status_tanah == "Kering" or data_terakhir['Kelembapan'] < 40.0:
+        status_pompa_aktif = "HIDUP"
+        notif_perintah = "🚨 ALERT: Deteksi tanah kering! Sistem otomatis mengirimkan sinyal instruksi: NYALAKAN POMPA AIR."
     else:
-        saklar_manual = st.toggle("Aktifkan Pompa Secara Manual")
-        if saklar_manual:
-            status_pompa_aktif = "HIDUP"
-            notif_perintah = "⚠️ MANUAL OVERRIDE: Pompa dinyalakan secara paksa oleh Pengguna."
-        else:
-            status_pompa_aktif = "MATI"
-            notif_perintah = "⚠️ MANUAL OVERRIDE: Pompa dimatikan secara paksa oleh Pengguna."
+        status_pompa_aktif = "MATI"
+        notif_perintah = "✅ AMAN: Tanah dalam kondisi lembap/normal. Instruksi: MATIKAN POMPA AIR."
 
     # Tampilan Visual Status Pompa
     if status_pompa_aktif == "HIDUP":
@@ -235,10 +229,8 @@ with c_img1:
 with c_img2:
     st.write("📋 **Hasil Analisis Struktur & Klorofil Daun:**")
     if uploaded_file is not None:
-        # Simulasi AI Vision yang akurat berdasarkan variasi random logic agar interaktif saat refresh
-        # Pada implementasi nyata, bagian ini dapat diganti dengan model.predict() citra Anda.
         status_panen_list = ["TUNDA PANEN", "TIDAK LAYAK PANEN", "LAYAK PANEN"]
-        bobot_acak = [0.2, 0.1, 0.7] # Probabilitas lebih besar ke layak panen untuk simulasi positif
+        bobot_acak = [0.2, 0.1, 0.7] 
         hasil_panen_pilihan = np.random.choice(status_panen_list, p=bobot_acak)
         
         if hasil_panen_pilihan == "LAYAK PANEN":
@@ -269,7 +261,6 @@ st.divider()
 # ==================================
 st.subheader("📈 Visualisasi Tren Parameter Lingkungan Berjalan")
 
-# Tab untuk memisahkan visualisasi tren waktu agar tertata rapi
 tab_jam, tab_harian, tab_mingguan = st.tabs(["🕒 Tren Jam (50 Data Terakhir)", "📅 Tren Harian", "📆 Ringkasan Mingguan"])
 
 with tab_jam:
@@ -289,7 +280,6 @@ with tab_jam:
         st.plotly_chart(fig2, use_container_width=True)
 
 with tab_harian:
-    # Agregasi data simulasi harian berdasarkan rata-rata per hari yang terekam
     if "Hari" in data_tampil.columns and len(data_tampil) > 0:
         df_harian = data_tampil.groupby("Hari")[["Kelembapan", "Suhu"]].mean().reset_index()
         fig3 = go.Figure()
@@ -308,7 +298,6 @@ with tab_harian:
         st.info("Data harian tidak cukup untuk direduksi.")
 
 with tab_mingguan:
-    # Simulasi trend makro mingguan dari akumulasi data berjalan
     fig4 = go.Figure()
     fig4.add_trace(go.Scatter(x=["Minggu 1", "Minggu 2", "Minggu 3"], y=[65.2, 58.4, data_tampil["Kelembapan"].mean()], mode="lines+markers", name="Trend Makro Kelembapan", line=dict(color='#1b4332', dash='dash')))
     fig4.update_layout(title="Prospek Pertumbuhan Kumulatif Mingguan", yaxis_title="Nilai Indeks Kelembapan")
@@ -317,11 +306,12 @@ with tab_mingguan:
 st.divider()
 
 # ==================================
-# BAGIAN 4: DATA MENTAH EXCEL (TERURUT REAL-TIME)
+# BAGIAN 4: DATA MENTAH EXCEL (TERBATASI 40 BARIS DATA REAL-TIME)
 # ==================================
-st.subheader("📋 Data Mentah Excel Sensor Terurut (Real-Time)")
-st.markdown("Berikut adalah tabel log keseluruhan data mentah dari total `1440` baris data di file excel, disajikan berurutan maju berdasarkan waktu berjalan aplikasi:")
+# Sesuai instruksi: Teks diletakkan di bawah visualisasi tren grafik utama.
+st.subheader("📋 Data Mentah Excel Sensor Terurut (40 Data Terakhir)")
+st.markdown("Berikut adalah tabel log yang disajikan berurutan maju berdasarkan waktu berjalan aplikasi (Dibatasi hanya menampilkan 40 baris data terbaru):")
 
-# Menampilkan data dari yang paling baru masuk (descending berdasarkan urutan pembacaan saat ini)
-df_urut_realtime = data_tampil.sort_values(by="NO", ascending=False)
-st.dataframe(df_urut_realtime, use_container_width=True, height=350)
+# Menampilkan data berjalan terbaru dan dipangkas hanya mengambil 40 data paling atas (.head(40))
+df_urut_realtime = data_tampil.sort_values(by="NO", ascending=False).head(40)
+st.dataframe(df_urut_realtime, use_container_width=True, height=300)
