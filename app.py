@@ -59,13 +59,44 @@ st.markdown("""
 # ==================================
 @st.cache_data
 def load_and_preprocess_all_data():
-    # PERBAIKAN: Membaca file CSV hasil ekstraksi dengan nama yang tepat
-    df_raw = pd.read_csv("Data_Bayam_1440 2026.xlsx - Sheet1.csv")
-    df_raw.columns = ["NO", "Hari", "Tanggal", "Waktu", "Kelembapan", "Suhu", "Status_Tanah"]
+    # Mekanisme Auto-Detect File untuk menghindari FileNotFoundError di Streamlit Cloud
+    file_xlsx = "Data_Bayam_1440 2026.xlsx"
+    file_csv_alt = "Data_Bayam_1440 2026.xlsx - Sheet1.csv"
     
+    if os.path.exists(file_xlsx):
+        # Jika file excel asli ada, baca langsung menggunakan read_excel
+        df_raw = pd.read_excel(file_xlsx)
+    elif os.path.exists(file_csv_alt):
+        # Jika file csv alternatif ada, baca menggunakan read_csv
+        df_raw = pd.read_csv(file_csv_alt)
+    else:
+        # Jika kedua nama di atas tidak ditemukan, cari file apa saja di folder yang mengandung kata "Bayam"
+        files_in_dir = os.listdir('.')
+        bayam_files = [f for f in files_in_dir if "Bayam" in f and (f.endswith('.csv') or f.endswith('.xlsx'))]
+        
+        if bayam_files:
+            target_file = bayam_files[0]
+            if target_file.endswith('.xlsx'):
+                df_raw = pd.read_excel(target_file)
+            else:
+                df_raw = pd.read_csv(target_file)
+        else:
+            raise FileNotFoundError("Gagal Menemukan file Dataset Bayam di repositori GitHub kamu. Pastikan file excel/csv sudah di-push.")
+
+    # Menjamin nama kolom seragam terlepas dari baris header excel
+    if "NO" not in df_raw.columns and len(df_raw.columns) >= 7:
+        df_raw = df_raw.copy()
+        df_raw.columns = ["NO", "Hari", "Tanggal", "Waktu", "Kelembapan", "Suhu", "Status_Tanah"]
+    else:
+        # Peta pembersihan jika huruf besar/kecil di kolom berbeda
+        df_raw.columns = [str(col).strip().replace(" ", "_").title() for col in df_raw.columns]
+        df_raw = df_raw.rename(columns={"No": "NO", "Hari": "Hari", "Tanggal": "Tanggal", "Waktu": "Waktu", 
+                                        "Kelembapan": "Kelembapan", "Suhu": "Suhu", "Status_Tanah": "Status_Tanah",
+                                        "Status_Tanah ": "Status_Tanah", "Status_tanah": "Status_Tanah"})
+
     df_raw["Kelembapan"] = pd.to_numeric(df_raw["Kelembapan"], errors="coerce")
     df_raw["Suhu"] = pd.to_numeric(df_raw["Suhu"], errors="coerce")
-    df_raw = df_raw.dropna().reset_index(drop=True)
+    df_raw = df_raw.dropna(subset=["Kelembapan", "Suhu"]).reset_index(drop=True)
     
     scaler = MinMaxScaler()
     X_scaled = scaler.fit_transform(df_raw[["Kelembapan", "Suhu"]].values)
@@ -235,6 +266,6 @@ with tab2:
                 st.error("⚠️ **Informasi Masalah Tanaman:** Terdeteksi adanya degradasi warna kekuningan atau bercak kusam akibat ketidakseimbangan kelembapan tanah atau defisiensi hara mikro. Tunda pemetikan dan periksa grafik sensor historis di panel realtime.")
                 
     st.write("---")
-    # PERBAIKAN: Menampilkan antarmuka 50 data excel awal dataset teratas secara statis
+    # Menampilkan antarmuka 50 data excel awal dataset teratas secara statis
     st.subheader("📋 Arsip Statis: 50 Data Excel Awal Master Dataset")
     st.dataframe(df.head(50), use_container_width=True)
