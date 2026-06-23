@@ -201,7 +201,7 @@ st.markdown("""
 # ==================================
 @st.fragment(run_every=2)
 def render_realtime_dashboard():
-    # Menaikkan counter internal jalannya data simulation
+    # Metaikkan counter internal jalannya data simulation
     st.session_state.live_counter += 1
     
     window = 6
@@ -209,7 +209,6 @@ def render_realtime_dashboard():
     data_tampil = df.iloc[:index_data]
     data_terakhir = data_tampil.iloc[-1]
     
-    # 🌟 DIUBAH: Menggunakan semua data berjalan dari awal hingga baris saat ini (bisa sampai 1440 data)
     data_grafik = data_tampil 
 
     # Jalankan Prediksi Realtime CNN-1D
@@ -314,7 +313,8 @@ def render_realtime_dashboard():
 
     st.divider()
 
-    # --- BAGIAN 3 & 4: VISUALISASI TREN (MEMUAT SEMUA DATA) ---
+    # --- BAGIAN 3 & 4: VISUALISASI TREN (WADAH KOTAK BACKGOUND DI SINI) ---
+    # 🌟 IMPLEMENTASI KOTAK WADAH BACKGROUND AGAR GRAFIK TERLIHAT KEREN
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
     
     st.subheader("📈 Visualisasi Tren Parameter Lingkungan Berjalan")
@@ -324,7 +324,6 @@ def render_realtime_dashboard():
         g1, g2 = st.columns(2)
         with g1:
             fig1 = go.Figure()
-            # 🌟 DIUBAH: mode="lines" untuk menghilangkan bulatan hitam marker agar grafik 1440 data tetap mulus & ringan
             fig1.add_trace(go.Scatter(x=data_grafik["Waktu"].astype(str) + " (" + data_grafik["NO"].astype(str) + ")", 
                                       y=data_grafik["Kelembapan"], mode="lines", name="Kelembapan", line=dict(color='#00FF87', width=1.5)))
             fig1.update_layout(title="Tren Realtime Kelembapan Tanah (%)", xaxis_title="Waktu (No Data)", yaxis_title="Kelembapan (%)", template="plotly_dark", margin=dict(l=20, r=20, t=40, b=20))
@@ -332,7 +331,6 @@ def render_realtime_dashboard():
             
         with g2:
             fig2 = go.Figure()
-            # 🌟 DIUBAH: mode="lines" untuk menghilangkan bulatan hitam marker agar grafik 1440 data tetap mulus & ringan
             fig2.add_trace(go.Scatter(x=data_grafik["Waktu"].astype(str) + " (" + data_grafik["NO"].astype(str) + ")", 
                                       y=data_grafik["Suhu"], mode="lines", name="Suhu", line=dict(color='#d90429', width=1.5)))
             fig2.update_layout(title="Tren Realtime Suhu Udara (°C)", xaxis_title="Waktu (No Data)", yaxis_title="Suhu (°C)", template="plotly_dark", margin=dict(l=20, r=20, t=40, b=20))
