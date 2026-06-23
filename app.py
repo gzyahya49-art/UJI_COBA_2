@@ -26,34 +26,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom Cyber Forest Dark Green & Neon CSS Injection
-st.markdown("""
-    <style>
-        .stApp {
-            background-color: #05160E;
-            color: #E0F2E9;
-        }
-        h1, h2, h3 {
-            color: #00FF87 !important;
-            text-shadow: 0 0 10px rgba(0, 255, 135, 0.3);
-            font-family: 'Courier New', monospace;
-        }
-        .stMetric {
-            background: rgba(10, 37, 24, 0.7);
-            border: 1px solid #00FF87;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 255, 135, 0.1);
-        }
-        div[data-testid="stMetricValue"] {
-            color: #00FF87 !important;
-        }
-        .sidebar .sidebar-content {
-            background-color: #030F0A;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 # ==================================
 # LOAD DATA & PREPROCESSING (CACHED)
 # ==================================
