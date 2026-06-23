@@ -237,7 +237,7 @@ with c_img2:
     else:
         st.write("*Silakan unggah citra daun terlebih dahulu untuk melihat hasil klasifikasi kelayakan.*")
 
-st.hr()
+st.divider()
 
 # ==================================
 # BAGIAN 3: VISUALISASI GRAFIK TREN MULTI-TIME (REAL-TIME)
@@ -289,7 +289,7 @@ with tab_mingguan:
     fig4.update_layout(title="Prospek Pertumbuhan Kumulatif Mingguan", yaxis_title="Nilai Indeks Kelembapan")
     st.plotly_chart(fig4, use_container_width=True)
 
-st.hr()
+st.divider()
 
 # ==================================
 # BAGIAN 4: DATA MENTAH EXCEL (TERURUT REAL-TIME)
