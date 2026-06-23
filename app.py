@@ -59,50 +59,51 @@ st.markdown("""
 # ==================================
 @st.cache_data
 def load_and_preprocess_all_data():
-    # Mekanisme Auto-Detect File untuk menghindari FileNotFoundError di Streamlit Cloud
     file_xlsx = "Log_Data_Bayam_Brazil_1440_2026.xlsx"
     file_csv_alt = "Data_Bayam_1440 2026.xlsx - Sheet1.csv"
     
     if os.path.exists(file_xlsx):
-        # Jika file excel asli ada, baca langsung menggunakan read_excel
         df_raw = pd.read_excel(file_xlsx)
     elif os.path.exists(file_csv_alt):
-        # Jika file csv alternatif ada, baca menggunakan read_csv
         df_raw = pd.read_csv(file_csv_alt)
     else:
-        # Jika kedua nama di atas tidak ditemukan, cari file apa saja di folder yang mengandung kata "Bayam"
         files_in_dir = os.listdir('.')
         bayam_files = [f for f in files_in_dir if "Bayam" in f and (f.endswith('.csv') or f.endswith('.xlsx'))]
-        
         if bayam_files:
             target_file = bayam_files[0]
-            if target_file.endswith('.xlsx'):
-                df_raw = pd.read_excel(target_file)
-            else:
-                df_raw = pd.read_csv(target_file)
+            df_raw = pd.read_excel(target_file) if target_file.endswith('.xlsx') else pd.read_csv(target_file)
         else:
-            raise FileNotFoundError("Gagal Menemukan file Dataset Bayam di repositori GitHub kamu. Pastikan file excel/csv sudah di-push.")
+            raise FileNotFoundError("Gagal Menemukan file Dataset Bayam di repositori GitHub kamu.")
 
-    # Menjamin nama kolom seragam terlepas dari baris header excel
     if "NO" not in df_raw.columns and len(df_raw.columns) >= 7:
         df_raw = df_raw.copy()
         df_raw.columns = ["NO", "Hari", "Tanggal", "Waktu", "Kelembapan", "Suhu", "Status_Tanah"]
     else:
-        # Peta pembersihan jika huruf besar/kecil di kolom berbeda
         df_raw.columns = [str(col).strip().replace(" ", "_").title() for col in df_raw.columns]
-        df_raw = df_raw.rename(columns={"No": "NO", "Hari": "Hari", "Tanggal": "Tanggal", "Waktu": "Waktu", 
-                                        "Kelembapan": "Kelembapan", "Suhu": "Suhu", "Status_Tanah": "Status_Tanah",
-                                        "Status_Tanah ": "Status_Tanah", "Status_tanah": "Status_Tanah"})
+        df_raw = df_raw.rename(columns={"No": "NO", "Status_Tanah_": "Status_Tanah", "Status_tanah": "Status_Tanah"})
 
     df_raw["Kelembapan"] = pd.to_numeric(df_raw["Kelembapan"], errors="coerce")
     df_raw["Suhu"] = pd.to_numeric(df_raw["Suhu"], errors="coerce")
     df_raw = df_raw.dropna(subset=["Kelembapan", "Suhu"]).reset_index(drop=True)
     
+    # PERBAIKAN: Kalibrasi ulang penamaan Status_Tanah pada dataset agar sesuai batas aturan baru
+    def hitung_status_aktual(klmbp):
+        if klmbp < 60:
+            return "Kering"
+        elif 60 <= klmbp <= 70:
+            return "Normal"
+        else:
+            return "Basah"
+            
+    df_raw["Status_Tanah"] = df_raw["Kelembapan"].apply(hitung_status_aktual)
+    
     scaler = MinMaxScaler()
     X_scaled = scaler.fit_transform(df_raw[["Kelembapan", "Suhu"]].values)
     
     encoder = LabelEncoder()
-    y_encoded = encoder.fit_transform(df_raw["Status_Tanah"].values)
+    # Menjamin classes_ berisi ["Basah", "Kering", "Normal"] secara konsisten
+    encoder.fit(["Basah", "Kering", "Normal"])
+    y_encoded = encoder.transform(df_raw["Status_Tanah"].values)
     
     window = 6
     X, y = [], []
@@ -147,8 +148,10 @@ st.sidebar.subheader("Sistem Informasi Bayam Brazil")
 st.sidebar.markdown("""
 **Bayam Brazil (*Alternanthera sissoo*)** adalah tanaman sayuran daun penutup tanah yang sangat adaptif. 
 - **Suhu Ideal:** 25°C - 30°C
-- **Kelembapan Ideal:** 60% - 80%
-- **Karakteristik:** Tumbuh rimbun, renyah, dan membutuhkan pasokan air konstan tanpa tergenang ekstrem.
+- **Kelembapan Aturan Sistem:**
+  -  `< 60%` : Kering
+  -  `60% - 70%` : Normal
+  -  `> 70%` : Basah
 """)
 st.sidebar.write("---")
 st.sidebar.info("Sistem Auto-Refresh aktif mentransmisikan total 1440 data sensor secara sekuensial.")
@@ -159,22 +162,16 @@ st.sidebar.info("Sistem Auto-Refresh aktif mentransmisikan total 1440 data senso
 st.title("⚡ NEO-MONITORING HYDROTECH // KELOMPOK 1")
 st.write("Sistem Pemantauan Cerdas Berbasis Aliran Data Realtime & Analisis Citra Kelayakan Panen.")
 
-# TABS UNTUK INTERFACE BERSIH DAN KEREN
 tab1, tab2 = st.tabs(["📟 Monitoring Node Realtime", "👁️ Analisis Citra Panen & Log Arsip"])
 
 with tab1:
-    # Auto-refresh sistem setiap 1 detik
     counter = st_autorefresh(interval=1000, key="realtime_counter")
     
     window = 6
-    # Berjalan terurut melintasi seluruh data dari 1 sampai 1440
     index_data = (counter % len(df)) + window
     
-    # Mengambil akumulasi seluruh data yang berjalan terurut (Maksimal 1440)
     data_tampil_all = df.iloc[:index_data]
     data_terakhir = data_tampil_all.iloc[-1]
-    
-    # Membatasi grafik bergerak agar fokus pada 50 titik data berjalan terakhir
     data_grafik = data_tampil_all.tail(50)
     
     # Jalankan Prediksi Realtime CNN-1D
@@ -196,12 +193,13 @@ with tab1:
     c4.metric("PREDIKSI PINTAR CNN", prediksi_status)
     
     st.write("")
-    if prediksi_status == "Basah":
-        st.success(f"🌊 **[NODE-{data_terakhir['NO']}] KONDISI TANAH TERDETEKSI: BASAH**")
-    elif prediksi_status == "Normal":
-        st.info(f"🌱 **[NODE-{data_terakhir['NO']}] KONDISI TANAH TERDETEKSI: NORMAL**")
-    elif prediksi_status == "Kering":
-        st.error(f"☀️ **[NODE-{data_terakhir['NO']}] KONDISI TANAH TERDETEKSI: KERING (Butuh Penyiraman Irigasi!)**")
+    # PERBAIKAN: Output banner menyesuaikan standarisasi pembacaan kelembapan baru Anda
+    if data_terakhir['Kelembapan'] > 70:
+        st.success(f"🌊 **[NODE-{data_terakhir['NO']}] KONDISI TANAH: BASAH ({data_terakhir['Kelembapan']}% > 70%)**")
+    elif 60 <= data_terakhir['Kelembapan'] <= 70:
+        st.info(f"🌱 **[NODE-{data_terakhir['NO']}] KONDISI TANAH: NORMAL (60% - 70%)**")
+    else:
+        st.error(f"☀️ **[NODE-{data_terakhir['NO']}] KONDISI TANAH: KERING ({data_terakhir['Kelembapan']}% < 60%) - Butuh Irigasi!**")
     st.write("")
     
     # Grafik Realtime Suhu & Kelembapan
@@ -214,7 +212,7 @@ with tab1:
             line=dict(color='#00FF87', width=2.5)
         ))
         fig1.update_layout(
-            title="🎯 TREN REALTIME KELEMBAPAN TANAH (%) - 50 DATA TERAKHIR",
+            title="🎯 TREN REALTIME KELEMBAPAN TANAH (%)",
             xaxis_title="Waktu (No Data)", yaxis_title="Kelembapan (%)",
             paper_bgcolor='rgba(10,37,24,0.5)', plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color='#E0F2E9')
@@ -229,20 +227,19 @@ with tab1:
             line=dict(color='#FF3B30', width=2.5)
         ))
         fig2.update_layout(
-            title="🌡️ TREN REALTIME SUHU UDARA (°C) - 50 DATA TERAKHIR",
+            title="🌡️ TREN REALTIME SUHU UDARA (°C)",
             xaxis_title="Waktu (No Data)", yaxis_title="Suhu (°C)",
             paper_bgcolor='rgba(10,37,24,0.5)', plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color='#E0F2E9')
         )
         st.plotly_chart(fig2, use_container_width=True)
         
-    # Menampilkan Seluruh Aliran Data Terurut (Dari data ke-1 hingga data berjalan ke-1440)
     st.subheader(f"📊 Aliran Matriks Realtime Berjalan (Data Saat Ini: {index_data} dari 1440)")
     st.dataframe(data_tampil_all.sort_values(by="NO", ascending=False), use_container_width=True)
 
 with tab2:
     st.header("👁️ Sistem Deteksi Citra Komputer Kelayakan Panen")
-    st.write("Masukkan foto daun/tanaman Bayam Brazil Anda untuk mendeteksi apakah tanaman dalam kondisi sehat (Layak Panen) atau bermasalah (Tidak Layak Panen).")
+    st.write("Masukkan foto daun/tanaman Bayam Brazil Anda untuk mendeteksi tingkat kelayakan panen.")
     
     file_gambar = st.file_uploader("Unggah Foto Bayam Brazil (.png, .jpg, .jpeg)", type=["png", "jpg", "jpeg"])
     
@@ -260,12 +257,11 @@ with tab2:
             
             if mean_green > 95:
                 st.markdown("<h4 style='color: #00FF87;'>STATUS: LAYAK PANEN (SEHAT)</h4>", unsafe_allow_html=True)
-                st.info("💡 **Informasi Tanaman:** Pigmentasi klorofil daun sangat optimal dan daun mengembang dengan struktur rimbun sempurna. Karakteristik nutrisi kalsium dan zat besi bayam berada pada level tertinggi. Siap dipasarkan!")
+                st.info("💡 Klorofil daun sangat optimal dan daun mengembang sempurna.")
             else:
-                st.markdown("<h4 style='color: #FF3B30;'>STATUS: BELUM/TIDAK LAYAK PANEN (BERMASALAH)</h4>", unsafe_allow_html=True)
-                st.error("⚠️ **Informasi Masalah Tanaman:** Terdeteksi adanya degradasi warna kekuningan atau bercak kusam akibat ketidakseimbangan kelembapan tanah atau defisiensi hara mikro. Tunda pemetikan dan periksa grafik sensor historis di panel realtime.")
+                st.markdown("<h4 style='color: #FF3B30;'>STATUS: BELUM LAYAK PANEN</h4>", unsafe_allow_html=True)
+                st.error("⚠️ Terdeteksi degradasi warna. Tunda pemetikan hara tanaman.")
                 
     st.write("---")
-    # Menampilkan antarmuka 50 data excel awal dataset teratas secara statis
     st.subheader("📋 Arsip Statis: 50 Data Excel Awal Master Dataset")
     st.dataframe(df.head(50), use_container_width=True)
