@@ -22,14 +22,6 @@ from PIL import Image
 # ==================================
 # CONFIG & THEME STREAMLIT (Satu Halaman Tunggal)
 # ==================================
-Agar semua teks di halaman (termasuk deskripsi, tulisan di dalam tab, instruksi file uploader, dan teks biasa) yang sebelumnya tidak terlihat/samar karena tertutup gambar background menjadi terlihat sangat jelas, kita bisa menambahkan latar belakang kotak transparan berwarna gelap-neon di setiap elemen teks tersebut melalui CSS.
-
-Berikut adalah perbaikan kode CSS pada bagian atas aplikasi Anda. Silakan ganti blok st.markdown bagian CSS di kode Anda dengan potongan kode di bawah ini:
-
-Python
-# ==================================
-# CONFIG & THEME STREAMLIT (Satu Halaman Tunggal)
-# ==================================
 st.set_page_config(
     page_title="Sistem Monitoring & Analisis Bayam - Hydrotech 1",
     layout="wide",
