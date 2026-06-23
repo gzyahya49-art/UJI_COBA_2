@@ -31,9 +31,9 @@ st.set_page_config(
 # Custom CSS untuk menyuntikkan tema tanaman daun alami
 st.markdown("""
     <style>
-    .reportview-container {
-         background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRe9AsD-Lb3uz7vZrtaEYOQFsUjRuoAiA4QUn4mXPFRids8yzQoYzqcZc&s=10') no-repeat center/cover;
-    }
+   [data-testid="stAppViewContainer"] {
+    background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRe9AsD-Lb3uz7vZrtaEYOQFsUjRuoAiA4QUn4mXPFRids8yzQoYzqcZc&s=10') no-repeat center/cover;
+}
     h1, h2, h3 {
         color: #1b4332 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
