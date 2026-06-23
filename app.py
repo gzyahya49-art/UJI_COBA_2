@@ -26,7 +26,7 @@ st.markdown("""
     <style>
     /* 1. Pengaturan Background Utama (Menggunakan gambar milikmu) */
     [data-testid="stAppViewContainer"] {
-        background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRe9AsD-Lb3uz7vZrtaEYOQFsUjRuoAiA4QUn4mXPFRids8yzQoYzqcZc&s=10') no-repeat center/cover;
+        background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSD0MnK0fOm6BBdgWVGHh5DLgsyBqppShq37ytsMvqEQ&s=10') no-repeat center/cover;
     }
     
     /* Membuat area kerja utama transparan gelap agar gambar background terlihat */
