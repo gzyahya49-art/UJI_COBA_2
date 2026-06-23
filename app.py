@@ -32,18 +32,30 @@ st.set_page_config(
 st.markdown("""
     <style>
     .reportview-container {
-        background: #f4f7f5;
+         background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRe9AsD-Lb3uz7vZrtaEYOQFsUjRuoAiA4QUn4mXPFRids8yzQoYzqcZc&s=10') no-repeat center/cover;
     }
     h1, h2, h3 {
         color: #1b4332 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .stMetric {
-        background-color: rgba(255, 255, 255, 0.5); /* Putih dengan transparansi 50% */
+   .stMetric {
+        background-color: rgba(255, 255, 255, 0.05); /* Latar belakang gelap transparan tipis */
         padding: 15px;
         border-radius: 12px;
-        border-left: 5px solid #2d6a4f;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        border-left: 5px solid #00FF87; /* Garis tepi kiri hijau neon */
+        box-shadow: 0 0 15px rgba(0, 255, 135, 0.2); /* Efek bayangan menyala neon */
+    }
+    
+    /* Membuat TEKS ANGKA/NILAI metrik berwarna hijau neon terang */
+    div[data-testid="stMetricValue"] {
+        color: #00FF87 !important;
+        text-shadow: 0 0 10px rgba(0, 255, 135, 0.6); /* Efek teks menyala (glow) */
+    }
+
+    /* Membuat TEKS JUDUL/LABEL di atas angka tetap terang dan jelas */
+    div[data-testid="stMetricLabel"] p {
+        color: #E0F2E9 !important;
+        font-weight: bold;
     }
     .status-card {
         padding: 20px;
