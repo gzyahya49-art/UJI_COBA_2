@@ -26,33 +26,78 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom Cyber Forest Dark Green & Neon CSS Injection
+# --- Kustom CSS untuk Tampilan Premium ---
 st.markdown("""
     <style>
-        .stApp {
-            background-color: #05160E;
-            color: #E0F2E9;
-        }
-        h1, h2, h3 {
-            color: #00FF87 !important;
-            text-shadow: 0 0 10px rgba(0, 255, 135, 0.3);
-            font-family: 'Courier New', monospace;
-        }
-        .stMetric {
-            background: rgba(10, 37, 24, 0.7);
-            border: 1px solid #00FF87;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 255, 135, 0.1);
-        }
-        div[data-testid="stMetricValue"] {
-            color: #00FF87 !important;
-        }
-        .sidebar .sidebar-content {
-            background-color: #030F0A;
-        }
+    .card-result {
+        background-color: #15202B;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 6px solid #00E676; /* Warna hijau untuk status sehat */
+        margin-bottom: 15px;
+    }
+    .metric-title {
+        font-size: 14px;
+        color: #8899A6;
+        margin-bottom: 2px;
+    }
+    .metric-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #FFFFFF;
+    }
+    .status-badge {
+        background-color: rgba(0, 230, 118, 0.15);
+        color: #00E676;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        display: inline-block;
+        font-size: 14px;
+    }
     </style>
 """, unsafe_allow_html=True)
+
+# --- Layout Utama Deteksi ---
+st.subheader("👁️ Analisis Metrik Kesehatan Daun")
+
+col1, col2 = st.columns([1, 1.2])
+
+with col1:
+    # Tempat menampilkan foto yang diunggah
+    st.image("path_to_uploaded_image.jpg", caption="Foto Tanaman yang Diunggah", use_container_width=True)
+
+with col2:
+    # 1. Status Utama dengan Badge Berwarna
+    st.markdown("### Hasil Deteksi Sistem")
+    st.markdown('<span class="status-badge">✓ LAYAK PANEN (SEHAT)</span>', unsafe_allow_html=True)
+    st.caption("Akurasi Model AI: **98.67%**")
+    
+    st.write("---")
+    
+    # 2. Kotak Metrik Indikator Kesehatan
+    sub_col1, sub_col2 = st.columns(2)
+    with sub_col1:
+        st.markdown("""
+            <div class="card-result" style="border-left-color: #00E676;">
+                <p class="metric-title">Indeks Klorofil</p>
+                <p class="metric-value">Optimal</p>
+            </div>
+        """, unsafe_allow_html=True)
+    with sub_col2:
+        st.markdown("""
+            <div class="card-result" style="border-left-color: #00E676;">
+                <p class="metric-title">Tekstur Daun</p>
+                <p class="metric-value">Sempurna</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    # 3. Kotak Informasi Rekomendasi Tindakan (Ganti Alert Box Standar)
+    st.info("""
+        **💡 Rekomendasi Tindakan:**
+        * Tanaman dalam kondisi prima dan siap dipanen hari ini untuk menjaga tekstur renyah khas Bayam Brazil.
+        * Jika menunda panen, pertahankan kelembapan tanah di angka **60-70% (Normal)** agar daun tidak mengeras.
+    """)
 
 # ==================================
 # LOAD DATA & PREPROCESSING (CACHED)
