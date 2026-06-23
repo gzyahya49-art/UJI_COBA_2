@@ -31,36 +31,20 @@ st.set_page_config(
 # Custom CSS untuk menyuntikkan tema tanaman daun alami
 st.markdown("""
     <style>
-    [data-testid="stAppViewContainer"] {
-        background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRe9AsD-Lb3uz7vZrtaEYOQFsUjRuoAiA4QUn4mXPFRids8yzQoYzqcZc&s=10') no-repeat center/cover;
+    .reportview-container {
+        background: #f4f7f5;
     }
     h1, h2, h3 {
         color: #1b4332 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
-    /* MODIFIKASI KOTAK METRIK: Latar abu-abu dengan aksen border hijau gelap */
     .stMetric {
-        background-color: #f0f2f0 !important; /* Latar belakang abu-abu terang */
+        background-color: #f8f9fa;
         padding: 15px;
         border-radius: 12px;
-        border-left: 5px solid #2d6a4f; /* Garis tepi kiri hijau botani */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Bayangan soft standar */
+        border-left: 5px solid #2d6a4f;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
-    
-    /* MODIFIKASI NILAI/ANGKA: Warna hijau gelap, efek neon dihapus */
-    div[data-testid="stMetricValue"] {
-        color: #1b4332 !important;
-        text-shadow: none !important; /* Menghapus efek menyala/glow */
-        font-weight: bold;
-    }
-
-    /* MODIFIKASI LABEL/JUDUL: Warna hijau gelap semi-soft agar senada */
-    div[data-testid="stMetricLabel"] p {
-        color: #2d6a4f !important;
-        font-weight: bold;
-    }
-    
     .status-card {
         padding: 20px;
         border-radius: 10px;
