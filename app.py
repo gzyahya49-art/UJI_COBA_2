@@ -22,33 +22,58 @@ from PIL import Image
 # ==================================
 # CONFIG & THEME STREAMLIT (Satu Halaman Tunggal)
 # ==================================
-st.set_page_config(
-    page_title="Sistem Monitoring & Analisis Bayam - Hydrotech 1",
-    layout="wide",
-    initial_sidebar_state="collapsed" # Menyembunyikan sidebar agar fokus pada satu halaman utama
-)
-
-# Custom CSS untuk menyuntikkan tema tanaman daun alami
 st.markdown("""
     <style>
-    .reportview-container {
-        background: #f4f7f5;
+    /* 1. Pengaturan Background Utama (Menggunakan gambar milikmu) */
+    [data-testid="stAppViewContainer"] {
+        background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRe9AsD-Lb3uz7vZrtaEYOQFsUjRuoAiA4QUn4mXPFRids8yzQoYzqcZc&s=10') no-repeat center/cover;
     }
-    h1, h2, h3 {
-        color: #1b4332 !important;
+    
+    /* Membuat area kerja utama transparan gelap agar gambar background terlihat */
+    [data-testid="stHeader"], [data-testid="stMainBlockContainer"] {
+        background-color: rgba(10, 25, 18, 0.6) !important;
+    }
+
+    /* 2. Mengubah semua teks heading (H1, H2, H3) menjadi HIKAU NEON TERANG */
+    h1, h2, h3, [data-testid="stMarkdownContainer"] h1, [data-testid="stMarkdownContainer"] h2, [data-testid="stMarkdownContainer"] h3 {
+        color: #00FF87 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-shadow: 0 0 10px rgba(0, 255, 135, 0.5); /* Efek pendaran neon */
     }
+    
+    /* Mengubah teks subheader bawaan Streamlit */
+    .stHeadingContainer h2, .stHeadingContainer h3 {
+        color: #00FF87 !important;
+    }
+
+    /* 3. Pengaturan Kotak Metrik (Latar abu-abu gelap dengan border neon) */
     .stMetric {
-        background-color: #f8f9fa;
+        background-color: rgba(28, 43, 36, 0.85) !important; /* Abu-abu kehijauan gelap */
         padding: 15px;
         border-radius: 12px;
-        border-left: 5px solid #2d6a4f;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-left: 5px solid #00FF87 !important;
+        box-shadow: 0 0 15px rgba(0, 255, 135, 0.3) !important;
     }
+    
+    /* Teks Angka/Nilai Metrik menjadi Hijau Neon Terang */
+    div[data-testid="stMetricValue"] {
+        color: #00FF87 !important;
+        text-shadow: 0 0 12px rgba(0, 255, 135, 0.8) !important;
+        font-weight: bold;
+    }
+
+    /* Teks Judul/Label Metrik di atas Angka */
+    div[data-testid="stMetricLabel"] p {
+        color: #e0f2e9 !important;
+        font-weight: bold;
+    }
+    
+    /* 4. Pengganti komponen kartu status */
     .status-card {
         padding: 20px;
         border-radius: 10px;
         margin-bottom: 20px;
+        background-color: rgba(20, 35, 28, 0.8);
     }
     </style>
 """, unsafe_allow_html=True)
