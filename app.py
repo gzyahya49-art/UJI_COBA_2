@@ -31,21 +31,19 @@ st.set_page_config(
 # Custom CSS untuk menyuntikkan tema tanaman daun alami
 st.markdown("""
     <style>
-    /* PERBAIKAN: Mengganti .reportview-container menjadi .stApp */
-    .stApp {
-        background-color: #f4f7f5;
-        color: #1b4332;
+    .reportview-container {
+        background: #f4f7f5;
     }
     h1, h2, h3 {
         color: #1b4332 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .stMetric {
-        background-color: #ffffff; /* Diubah ke putih bersih agar kontras dengan background abu-hijau */
+        background-color: rgba(255, 255, 255, 0.5); /* Putih dengan transparansi 50% */
         padding: 15px;
         border-radius: 12px;
         border-left: 5px solid #2d6a4f;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.03);
     }
     .status-card {
         padding: 20px;
