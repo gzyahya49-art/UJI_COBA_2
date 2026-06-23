@@ -31,36 +31,36 @@ st.set_page_config(
 # Custom CSS untuk menyuntikkan tema tanaman daun alami
 st.markdown("""
     <style>
-.stApp {
-        background-color: #f4f7f5;
-        color: #1b4332;
-    
-   [data-testid="stAppViewContainer"] {
-    background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRe9AsD-Lb3uz7vZrtaEYOQFsUjRuoAiA4QUn4mXPFRids8yzQoYzqcZc&s=10') no-repeat center/cover;
-}
+    [data-testid="stAppViewContainer"] {
+        background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRe9AsD-Lb3uz7vZrtaEYOQFsUjRuoAiA4QUn4mXPFRids8yzQoYzqcZc&s=10') no-repeat center/cover;
+    }
     h1, h2, h3 {
         color: #1b4332 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-   .stMetric {
-        background-color: rgba(255, 255, 255, 0.05); /* Latar belakang gelap transparan tipis */
+    
+    /* MODIFIKASI KOTAK METRIK: Latar abu-abu dengan aksen border hijau gelap */
+    .stMetric {
+        background-color: #f0f2f0 !important; /* Latar belakang abu-abu terang */
         padding: 15px;
         border-radius: 12px;
-        border-left: 5px solid #00FF87; /* Garis tepi kiri hijau neon */
-        box-shadow: 0 0 15px rgba(0, 255, 135, 0.2); /* Efek bayangan menyala neon */
+        border-left: 5px solid #2d6a4f; /* Garis tepi kiri hijau botani */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Bayangan soft standar */
     }
     
-    /* Membuat TEKS ANGKA/NILAI metrik berwarna hijau neon terang */
+    /* MODIFIKASI NILAI/ANGKA: Warna hijau gelap, efek neon dihapus */
     div[data-testid="stMetricValue"] {
-        color: #00FF87 !important;
-        text-shadow: 0 0 10px rgba(0, 255, 135, 0.6); /* Efek teks menyala (glow) */
-    }
-
-    /* Membuat TEKS JUDUL/LABEL di atas angka tetap terang dan jelas */
-    div[data-testid="stMetricLabel"] p {
-        color: #E0F2E9 !important;
+        color: #1b4332 !important;
+        text-shadow: none !important; /* Menghapus efek menyala/glow */
         font-weight: bold;
     }
+
+    /* MODIFIKASI LABEL/JUDUL: Warna hijau gelap semi-soft agar senada */
+    div[data-testid="stMetricLabel"] p {
+        color: #2d6a4f !important;
+        font-weight: bold;
+    }
+    
     .status-card {
         padding: 20px;
         border-radius: 10px;
