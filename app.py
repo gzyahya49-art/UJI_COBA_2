@@ -1,4 +1,5 @@
 import os
+import io
 import logging
 from contextlib import redirect_stdout
 
@@ -423,7 +424,7 @@ def render_realtime_dashboard():
     col_left, col_right = st.columns([1.8, 1.2])
 
     with col_left:
-        st.subheader("📊 Kondisi Sensor (Real-Time)")
+        st.subheader("📊 Kondisi Sensor Soil Moisture (Real-Time)")
         m1, m2, m3 = st.columns(3)
         m1.metric("💧 Kelembapan Tanah",     f"{int(data_terakhir['Kelembapan'])}%")
         m2.metric("🌡️ Suhu Lingkungan",      f"{data_terakhir['Suhu']}°C")
@@ -468,7 +469,7 @@ def render_realtime_dashboard():
     # ============================================================
     # BAGIAN 2: DETEKSI CITRA DAUN
     # ============================================================
-    st.subheader("📷 Computer Vision: Deteksi Status Kelayakan Panen Daun")
+    st.subheader("📷 Computer Vision: Deteksi Status Kelayakan Panen Tanaman Bayam Brazil")
     c_img1, c_img2 = st.columns([1.2, 1.8])
 
     with c_img1:
@@ -534,7 +535,7 @@ def render_realtime_dashboard():
     # BAGIAN 3: GRAFIK — BACA DATA DARI ATAS KE BAWAH (NO ascending)
     # ============================================================
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
-    st.subheader("📈 Visualisasi Tren Parameter Lingkungan Berjalan")
+    st.subheader("📈 Visualisasi Tren Grafik Lingkungan Berjalan")
 
     tab_jam, tab_harian, tab_mingguan = st.tabs([
         "🕒 Tren Real-Time (Semua Data)",
@@ -558,7 +559,7 @@ def render_realtime_dashboard():
             # fill dihapus → garis bersih tunggal
         ))
         fig_kel.update_layout(
-            title=dict(text="💧 Kelembapan Tanah (%) — Real-Time",
+            title=dict(text="💧 Grafik Kelembapan Tanah (%) — Real-Time",
                        font=dict(color="#0f2d1a", size=14)),
             uirevision="kelembapan-chart",
             yaxis=dict(range=[0, 110], gridcolor="#e8f5e9", linecolor="#c8e6c9",
@@ -584,7 +585,7 @@ def render_realtime_dashboard():
             # fill dihapus → garis bersih tunggal
         ))
         fig_suhu.update_layout(
-            title=dict(text="🌡️ Suhu Udara (°C) — Real-Time",
+            title=dict(text="🌡️ Grafik Suhu Udara (°C) — Real-Time",
                        font=dict(color="#0f2d1a", size=14)),
             uirevision="suhu-chart",
             yaxis=dict(range=[y_s_min, y_s_max], gridcolor="#e8f5e9", linecolor="#c8e6c9",
@@ -652,7 +653,7 @@ def render_realtime_dashboard():
 
         fig_pompa.update_layout(
             title=dict(
-                text="⚙️ Status Pompa Otomatis Berdasarkan Kondisi Tanah (Kering · Normal · Basah)",
+                text="⚙️ Grafik Status Pompa Otomatis Berdasarkan Kondisi Tanah (Kering · Normal · Basah)",
                 font=dict(color="#0f2d1a", size=14)
             ),
             uirevision="pompa-chart",
@@ -763,23 +764,30 @@ def render_realtime_dashboard():
     # BAGIAN 4: DATA MENTAH — URUTAN ATAS KE BAWAH (ascending NO)
     # ============================================================
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
-    st.subheader("📋 Data Mentah Excel Sensor Terurut (Real-Time)")
+    st.subheader("📋 (1440) Data Mentah Xlsx Sensor Terurut (Real-Time)")
 
-    # Tampilkan dari atas ke bawah (NO ascending = data pertama di atas)
     df_urut = data_tampil.sort_values(by="NO", ascending=True)
     st.dataframe(df_urut, use_container_width=True, height=420)
 
-    csv_data = df.to_csv(index=False).encode('utf-8')
+    buffer = io.BytesIO()
+
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        # Anda bisa mengganti sheet_name sesuai kebutuhan, misal 'Log Sensor'
+        df.to_excel(writer, index=False, sheet_name='Log Sensor')
+
+    xlsx_data = buffer.getvalue()
+
     st.download_button(
         label="📥 Unduh Seluruh Data Historis Eksperimen (Full 30 Hari / 1440 Data)",
-        data=csv_data,
-        file_name='Log_Sistem_Penyiraman_Bayam_Brazil_30_Hari.csv',
-        mime='text/csv',
+        data=xlsx_data,
+        file_name='Log_Sistem_Penyiraman_Bayam_Brazil_30_Hari.xlsx',
+        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         key="download_btn_key"
     )
-    st.markdown('</div>', unsafe_allow_html=True)
+    # ===================================================================
 
-       # ============================================================
+    st.markdown('</div>', unsafe_allow_html=True)
+    # ============================================================
     # BAGIAN 5: 50 DATA TERAKHIR + GRAFIK REAL-TIME TAMBAHAN
     # ============================================================
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
@@ -787,7 +795,7 @@ def render_realtime_dashboard():
     # Mengunci data hanya pada 50 data pertama agar grafik diam (tidak bergeser)
     df_50 = data_tampil.head(50).copy()
 
-    st.subheader("📑 50 Data Monitoring Terakhir")
+    st.subheader("📑 (50) Data Monitoring Terakhir terurut ")
     st.dataframe(
         df_50,
         use_container_width=True,
@@ -820,9 +828,6 @@ def render_realtime_dashboard():
 
     with col_g2:
         fig50_suhu = go.Figure()
-        
-        # PERBAIKAN UTAMA: Mengubah go.Bar menjadi go.Scatter dengan mode lines+markers 
-        # Ini akan menghentikan efek kedipan (flicker) yang biasa terjadi pada grafik batang (Bar)
         fig50_suhu.add_trace(go.Scatter(
             x=df_50["NO"],
             y=df_50["Suhu"],
@@ -840,7 +845,7 @@ def render_realtime_dashboard():
         st.plotly_chart(
             fig50_suhu,
             use_container_width=True,
-            key="grafik50suhu_statis" # Mengganti key agar Streamlit mereset cache render lawas
+            key="grafik50suhu_statis" 
         )
 
     st.markdown('</div>', unsafe_allow_html=True)
