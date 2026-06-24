@@ -21,7 +21,7 @@ from PIL import Image
 # CONFIG
 # ==================================
 st.set_page_config(
-    page_title="Sistem Monitoring & Analisis Bayam - BRAZILEARN ONE HYDROTECH",
+    page_title="Pemanfaatan ML Dengan Convolutional Neural Network - 1 Dimensi (CNN_1D)",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
