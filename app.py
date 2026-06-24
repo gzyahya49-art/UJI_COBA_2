@@ -21,7 +21,7 @@ from PIL import Image
 # CONFIG
 # ==================================
 st.set_page_config(
-    page_title="Pemanfaatan ML Dengan Convolutional Neural Network - 1 Dimensi (CNN_1D)",
+    page_title="Mesin Learning Berbasis Convolutional Neural Network - 1 Dimensi (CNN_1D)",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -365,7 +365,7 @@ st.markdown("""
         margin:0 0 8px; font-size:28px; font-weight:800;
         color:#0f2d1a !important; text-shadow:none !important;
         letter-spacing:-0.5px; font-family:"Inter",sans-serif;
-    '>🌿 SMART BOTANICAL DASHBOARD</h1>
+    '>🌿 Pemanfaatan ML Dengan Convolutional Neural Network - 1 Dimensi (CNN_1D)</h1>
     <div style='font-size:13px; color:#4b6358; font-weight:500;
                 letter-spacing:0.5px; font-family:"Inter",sans-serif;'>
         BRAZILEARN ONE HYDROTECH &nbsp;·&nbsp; CNN-1D Machine Learning
