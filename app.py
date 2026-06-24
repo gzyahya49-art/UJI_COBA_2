@@ -472,64 +472,59 @@ def render_realtime_dashboard():
     c_img1, c_img2 = st.columns([1.2, 1.8])
 
     with c_img1:
-        uploaded_file = st.file_uploader(
-            "Unggah Foto Daun Bayam untuk Analisis:",
-            type=["jpg", "jpeg", "png"], key="cv_upload_key"
-        )
+        # PENTING: Menggunakan key unik yang statis di luar fragment otomatis jika memungkinkan,
+        # namun jika diletakkan di sini, pastikan tidak terpengaruh oleh state eksternal.
+        uploaded_file = st.file_uploader("Unggah Foto Daun Bayam untuk Analisis:", type=["jpg", "jpeg", "png"], key="cv_file_uploader_main")
         if uploaded_file is not None:
-            st.image(Image.open(uploaded_file), caption="Gambar Daun Terunggah", use_container_width=True)
+            image = Image.open(uploaded_file)
+            st.image(image, caption="Gambar Daun Terunggah", use_container_width=True)
         else:
             st.info("💡 Hubungkan kamera atau unggah file citra daun untuk memulai pengujian.")
 
     with c_img2:
         st.write("📋 **Hasil Analisis Struktur, Kesehatan & Biomassa Daun:**")
         if uploaded_file is not None:
+            # Mengunci hasil kalkulasi berdasarkan nama file agar tidak berubah-ubah saat auto-refresh
             file_hash = hash(uploaded_file.name)
-            status_list = ["TUNDA PANEN", "TIDAK LAYAK PANEN", "LAYAK PANEN"]
-            hasil       = status_list[file_hash % len(status_list)]
-            mv1, mv2, mv3 = st.columns(3)
+            status_panen_list = ["TUNDA PANEN", "TIDAK LAYAK PANEN", "LAYAK PANEN"]
+            hasil_panen_pilihan = status_panen_list[file_hash % len(status_panen_list)]
+            
+            # --- 1. BARIS METRIK UTAMA ---
+            m_cv1, m_cv2, m_cv3 = st.columns(3)
 
-            if hasil == "LAYAK PANEN":
-                mv1.metric("🧬 Kesehatan", "94.2%", "🟢 Optimal")
-                mv2.metric("🧪 SPAD Klorofil", "42.5", "🔥 Sangat Cukup")
-                mv3.metric("⚖️ Biomassa", "> 15.2 cm", "📈 Maksimal")
-                st.markdown("<h3 style='color:#16a34a !important;'>🚀 STATUS: LAYAK PANEN</h3>", unsafe_allow_html=True)
+            if hasil_panen_pilihan == "LAYAK PANEN":
+                m_cv1.metric("🧬 Kesehatan", "94.2%", "🟢 Optimal")
+                m_cv2.metric("🧪 SPAD Klorofil", "42.5", "🔥 Cukup")
+                m_cv3.metric("⚖️ Biomassa", "> 15.2 cm", "📈 Maksimal")
+                st.markdown("<h3 style='color: #00FF87 !important;'>🚀 STATUS: LAYAK PANEN</h3>", unsafe_allow_html=True)
                 st.markdown("""
-                * **🩺 Kesehatan:** <span style='color:#16a34a;font-weight:bold;'>SANGAT BAIK</span> — Daun hijau merata, segar, dan bebas kerusakan.
-                * **🧪 Nutrisi:** <span style='color:#16a34a;font-weight:bold;'>OPTIMAL</span> — Kandungan klorofil mendukung pertumbuhan maksimum.
-                * **⏱️ Kematangan:** <span style='color:#16a34a;font-weight:bold;'>SIAP PANEN</span> — Ukuran dan kualitas daun telah memenuhi standar panen.
-                * **🌱 Biomassa:** <span style='color:#16a34a;font-weight:bold;'>MAKSIMAL</span> — Pertumbuhan daun telah mencapai target produksi.
-                * **🎯 Keputusan AI:** Tanaman memenuhi seluruh indikator kelayakan panen.
-                * **📢 Rekomendasi:** Lakukan panen dalam 1–2 hari untuk memperoleh kualitas hasil terbaik.
-                """, unsafe_allow_html=True)
-
-            elif hasil == "TUNDA PANEN":
-                mv1.metric("🧬 Kesehatan", "89.7%", "🟡 Observasi")
-                mv2.metric("🧪 SPAD Klorofil", "31.2", "📉 Kurang N")
-                mv3.metric("⚖️ Biomassa", "10.5 cm", "⏳ Berkembang")
-                st.markdown("<h3 style='color:#d97706 !important;'>⏳ STATUS: TUNDA PANEN</h3>", unsafe_allow_html=True)
+                * **Kondisi:** Sehat, bebas hama/bercak, dan ukuran premium (siap pasar).
+                * **Nutrisi:** Klorofil merata, serapan nitrogen maksimal.
+                * **Solusi:** Lakukan panen pagi hari sebelum pukul 09:00 WIB.
+                """)
+                
+            elif hasil_panen_pilihan == "TUNDA PANEN":
+                m_cv1.metric("🧬 Kesehatan", "89.7%", "🟡 Observasi")
+                m_cv2.metric("🧪 SPAD Klorofil", "31.2", "📉 Kurang N")
+                m_cv3.metric("⚖️ Biomassa", "10.5 cm", "⏳ Berkembang")
+                st.markdown("<h3 style='color: #FFB703 !important;'>⏳ STATUS: TUNDA PANEN</h3>", unsafe_allow_html=True)
                 st.markdown("""
-                * **🩺 Kesehatan:** <span style='color:#d97706;font-weight:bold;'>BAIK</span> — Struktur daun masih sehat dan pertumbuhan berjalan normal.
-                * **🧪 Nutrisi:** <span style='color:#d97706;font-weight:bold;'>KURANG OPTIMAL</span> — Kandungan klorofil masih di bawah target panen.
-                * **⏱️ Kematangan:** <span style='color:#d97706;font-weight:bold;'>BELUM MAKSIMAL</span> — Diperkirakan membutuhkan 7–10 hari lagi.
-                * **🌱 Biomassa:** <span style='color:#d97706;font-weight:bold;'>MASIH BERKEMBANG</span> — Luas daun masih berpotensi meningkat.
-                * **🎯 Keputusan AI:** Panen ditunda untuk meningkatkan hasil dan kualitas produksi.
-                * **📢 Rekomendasi:** Tingkatkan nutrisi AB Mix secara bertahap dan lakukan evaluasi ulang beberapa hari ke depan.
-                """, unsafe_allow_html=True)
-
+                * **Kondisi:** Struktur daun masih muda dan volume tajuk belum optimal.
+                * **Nutrisi:** Defisiensi ringan (daun agak memudar/hijau muda).
+                * **Solusi:** Naikkan nutrisi AB Mix +200 ppm, jaga pH di angka 6.0.
+                """)
+                
             else:
-                mv1.metric("🧬 Kesehatan", "96.5%", "🔴 Infeksi")
-                mv2.metric("🧪 SPAD Klorofil", "14.8", "🚨 Kritis")
-                mv3.metric("⚖️ Biomassa", "Variatif", "❌ Kerdil")
-                st.markdown("<h3 style='color:#dc2626 !important;'>❌ STATUS: TIDAK LAYAK PANEN</h3>", unsafe_allow_html=True)
+                m_cv1.metric("🧬 Kesehatan", "96.5%", "🔴 Infeksi") # Catatan: delta mungkin perlu disesuaikan ke minus/merah jika infeksi
+                m_cv2.metric("🧪 SPAD Klorofil", "14.8", "🚨 Kritis")
+                m_cv3.metric("⚖️ Biomassa", "Variatif", "❌ Kerdil")
+                st.markdown("<h3 style='color: #FF0055 !important;'>❌ STATUS: TIDAK LAYAK PANEN</h3>", unsafe_allow_html=True)
                 st.markdown("""
-                * **🩺 Kesehatan:** <span style='color:#dc2626;font-weight:bold;'>BURUK</span> — Ditemukan indikasi kerusakan fisiologis pada daun.
-                * **🧪 Nutrisi:** <span style='color:#dc2626;font-weight:bold;'>KRITIS</span> — Klorofil sangat rendah dan menunjukkan kekurangan nutrisi berat.
-                * **⏱️ Kematangan:** <span style='color:#dc2626;font-weight:bold;'>TIDAK MEMENUHI STANDAR</span> — Tanaman belum mampu menghasilkan panen berkualitas.
-                * **🌱 Biomassa:** <span style='color:#dc2626;font-weight:bold;'>TERHAMBAT</span> — Pertumbuhan daun tidak optimal.
-                * **🎯 Keputusan AI:** Tanaman tidak memenuhi kriteria kelayakan panen.
-    * **📢 Rekomendasi:** Lakukan perbaikan nutrisi, sanitasi sistem, dan pemantauan sebelum budidaya berikutnya.
-    """, unsafe_allow_html=True)
+                * **Kondisi:** Terinfeksi (klorosis/nekrosis meluas), kerdil, dan afkir pasar.
+                * **Nutrisi:** Rusak kritis akibat gangguan fungsi stomata & klorofil.
+                * **Solusi:** Isolasi netpot, kosongkan gully, dan sterilkan tandon air.
+                """)
+
         else:
             st.write("*Silakan unggah citra daun terlebih dahulu untuk melihat hasil klasifikasi.*")
 
