@@ -308,6 +308,7 @@ except Exception:
 @st.cache_resource
 def train_cnn_model(X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=False)
+    
     model = Sequential([
         Conv1D(32, kernel_size=2, activation='relu', input_shape=(6, 2)),
         MaxPooling1D(pool_size=2),
@@ -317,11 +318,17 @@ def train_cnn_model(X, y):
         Dropout(0.2),
         Dense(3, activation='softmax')
     ])
+    
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model.fit(X_train, y_train, epochs=10, batch_size=16, validation_split=0.2, verbose=0)
-    return model
+    
+    # 1. model.fit() dimasukkan ke dalam variabel history_obj agar tercatat nilainya
+    history_obj = model.fit(X_train, y_train, epochs=50, batch_size=16, validation_split=0.2, verbose=0)
+    
+    # 2. Mengembalikan model dan dictionary data history-nya sekaligus
+    return model, history_obj.history
 
-model = train_cnn_model(X_all, y_all)
+# 3. Memanggil fungsi dan memecah hasilnya ke dua variabel (model dan history_data)
+model, history_data = train_cnn_model(X_all, y_all)
 
 if "live_counter" not in st.session_state:
     st.session_state.live_counter = 0
@@ -489,8 +496,7 @@ def render_realtime_dashboard():
             file_hash = hash(uploaded_file.name)
             status_panen_list = ["TUNDA PANEN", "TIDAK LAYAK PANEN", "LAYAK PANEN"]
             hasil_panen_pilihan = status_panen_list[file_hash % len(status_panen_list)]
-            
-            # --- 1. BARIS METRIK UTAMA ---
+
             m_cv1, m_cv2, m_cv3 = st.columns(3)
 
             if hasil_panen_pilihan == "LAYAK PANEN":
@@ -498,41 +504,83 @@ def render_realtime_dashboard():
                 m_cv2.metric("🧪 SPAD Klorofil", "42.5", "🔥 Cukup")
                 m_cv3.metric("⚖️ Biomassa", "> 15.2 cm", "📈 Maksimal")
                 st.markdown("<h3 style='color: #00FF87 !important;'>🚀 STATUS: LAYAK PANEN</h3>", unsafe_allow_html=True)
-                st.markdown("""
-                * **Kondisi:** Sehat, bebas hama/bercak, dan ukuran premium (siap pasar).
-                * **Nutrisi:** Klorofil merata, serapan nitrogen maksimal.
-                * **Solusi:** Lakukan panen pagi hari sebelum pukul 09:00 WIB.
-                """)
-                
+                kondisi_txt = ">Sehat, bebas hama/bercak, dan ukuran premium (siap pasar)."
+                nutrisi_txt = ">Klorofil merata, serapan nitrogen maksimal."
+                solusi_txt = ">Lakukan panen pagi hari sebelum rusak."
+
             elif hasil_panen_pilihan == "TUNDA PANEN":
                 m_cv1.metric("🧬 Kesehatan", "89.7%", "🟡 Observasi")
                 m_cv2.metric("🧪 SPAD Klorofil", "31.2", "📉 Kurang N")
                 m_cv3.metric("⚖️ Biomassa", "10.5 cm", "⏳ Berkembang")
                 st.markdown("<h3 style='color: #FFB703 !important;'>⏳ STATUS: TUNDA PANEN</h3>", unsafe_allow_html=True)
-                st.markdown("""
-                * **Kondisi:** Struktur daun masih muda dan volume tajuk belum optimal.
-                * **Nutrisi:** Defisiensi ringan (daun agak memudar/hijau muda).
-                * **Solusi:** Naikkan nutrisi AB Mix +200 ppm, jaga pH di angka 6.0.
-                """)
-                
+                kondisi_txt = ">Struktur daun masih muda dan volume tajuk belum optimal."
+                nutrisi_txt = ">Defisiensi ringan (daun agak memudar/hijau muda)."
+                solusi_txt = ">Naikkan nutrisi AB Mix +200 ppm, jaga pH di angka 6.0."
+
             else:
-                m_cv1.metric("🧬 Kesehatan", "96.5%", "🔴 Infeksi") # Catatan: delta mungkin perlu disesuaikan ke minus/merah jika infeksi
+                m_cv1.metric("🧬 Kesehatan", "96.5%", "🔴 Infeksi")
                 m_cv2.metric("🧪 SPAD Klorofil", "14.8", "🚨 Kritis")
                 m_cv3.metric("⚖️ Biomassa", "Variatif", "❌ Kerdil")
                 st.markdown("<h3 style='color: #FF0055 !important;'>❌ STATUS: TIDAK LAYAK PANEN</h3>", unsafe_allow_html=True)
-                st.markdown("""
-                * **Kondisi:** Terinfeksi (klorosis/nekrosis meluas), kerdil, dan afkir pasar.
-                * **Nutrisi:** Rusak kritis akibat gangguan fungsi stomata & klorofil.
-                * **Solusi:** Isolasi netpot, kosongkan gully, dan sterilkan tandon air.
-                """)
+                kondisi_txt = ">Kerdil, klorosis meluas, dan afkir pasar."
+                nutrisi_txt = ">Rusak kritis akibat gangguan fungsi stomata dan klorofil."
+                solusi_txt = ">Isolasi netpot, kosongkan gully, dan sterilkan tandon air."
+
+            st.markdown("---")
+            kolom1, kolom2, kolom3 = st.columns(3)
+
+            with kolom1:
+                st.markdown("### 🔍 Kondisi")
+                st.caption(kondisi_txt)
+
+            with kolom2:
+                st.markdown("### 🧪 Nutrisi")
+                st.caption(nutrisi_txt)
+
+            with kolom3:
+                st.markdown("### 🛠️ Solusi")
+                st.caption(solusi_txt)
 
         else:
             st.write("*Silakan unggah citra daun terlebih dahulu untuk melihat hasil klasifikasi.*")
 
+    if 'history_data' in globals() or 'history_data' in locals():
+        st.markdown("---")
+        st.markdown("### 🧠 Grafik Training 50 Epochs (CNN-1D Epoch History)")
+        st.caption("Grafik ini membuktikan proses pelatihan model Mesin Learning menggunakan 1.440 data sensor")
+
+        # Mengambil data langsung dari dictionary history_data
+        acc = history_data['accuracy']
+        val_acc = history_data['val_accuracy']
+        loss = history_data['loss']
+        val_loss = history_data['val_loss']
+        epochs_range = list(range(1, len(acc) + 1))
+
+        # Membuat 2 kolom sejajar untuk grafik Akurasi dan Loss
+        col_graph1, col_graph2 = st.columns(2)
+
+        # --- GRAFIK 1: AKURASI PER EPOCH ---
+        with col_graph1:
+            fig_acc = go.Figure()
+            fig_acc.add_trace(go.Scatter(x=epochs_range, y=acc, mode='lines+markers', name='Training Accuracy', line=dict(color='#00ffcc', width=3)))
+            fig_acc.add_trace(go.Scatter(x=epochs_range, y=val_acc, mode='lines+markers', name='Validation Accuracy', line=dict(color='#ff00ff', width=3, dash='dash')))
+            fig_acc.update_layout(title="🎯 Grafik Akurasi Model", xaxis_title="Epoch", yaxis_title="Nilai Akurasi", height=350)
+            st.plotly_chart(fig_acc, use_container_width=True)
+
+        # --- GRAFIK 2: LOSS PER EPOCH ---
+        with col_graph2:
+            fig_loss = go.Figure()
+            fig_loss.add_trace(go.Scatter(x=epochs_range, y=loss, mode='lines+markers', name='Training Loss', line=dict(color='#ff3333', width=3)))
+            fig_loss.add_trace(go.Scatter(x=epochs_range, y=val_loss, mode='lines+markers', name='Validation Loss', line=dict(color='#3399ff', width=3, dash='dash')))
+            fig_loss.update_layout(title="📉 Grafik Loss (Tingkat Error)", xaxis_title="Epoch", yaxis_title="Nilai Error", height=350)
+            st.plotly_chart(fig_loss, use_container_width=True)
+
+        st.info(f"💡 **Hasil Evaluasi Akhir:** Model CNN-1D berhasil mencapai tingkat akurasi pelatihan sebesar **{acc[-1]*100:.2f}%**.")
+
     st.divider()
 
     # ============================================================
-    # BAGIAN 3: GRAFIK — BACA DATA DARI ATAS KE BAWAH (NO ascending)
+    # BAGIAN 4: GRAFIK — BACA DATA DARI ATAS KE BAWAH TERURUT
     # ============================================================
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
     st.subheader("📈 Visualisasi Tren Grafik Lingkungan Berjalan")
@@ -761,7 +809,7 @@ def render_realtime_dashboard():
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ============================================================
-    # BAGIAN 4: DATA MENTAH — URUTAN ATAS KE BAWAH (ascending NO)
+    # BAGIAN 5: DATA MENTAH — URUTAN ATAS KE BAWAH (ascending NO)
     # ============================================================
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
     st.subheader("📋 (1440) Data Mentah Xlsx Sensor Terurut (Real-Time)")
@@ -788,7 +836,7 @@ def render_realtime_dashboard():
 
     st.markdown('</div>', unsafe_allow_html=True)
     # ============================================================
-    # BAGIAN 5: 50 DATA TERAKHIR + GRAFIK REAL-TIME TAMBAHAN
+    # BAGIAN 6: 50 DATA TERAKHIR + GRAFIK REAL-TIME TAMBAHAN
     # ============================================================
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
 
