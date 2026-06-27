@@ -814,8 +814,14 @@ def render_realtime_dashboard():
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
     st.subheader("📋 (1440) Data Mentah Xlsx Sensor Terurut (Real-Time)")
 
+    # Mengurutkan data berdasarkan NO
     df_urut = data_tampil.sort_values(by="NO", ascending=True)
-    st.dataframe(df_urut, use_container_width=True, height=420)
+
+    # Menghapus kolom 'Status_Num' dan 'Status_Label' hanya untuk tampilan tabel
+    df_tampilan = df_urut.drop(columns=["Status_Num", "Status_Label"], errors="ignore")
+
+    # Menampilkan dataframe yang sudah bersih dari kedua kolom tersebut
+    st.dataframe(df_tampilan, use_container_width=True, height=420)
 
     buffer = io.BytesIO()
 
@@ -835,66 +841,97 @@ def render_realtime_dashboard():
     # ===================================================================
 
     st.markdown('</div>', unsafe_allow_html=True)
-    # ============================================================
-    # BAGIAN 6: 50 DATA TERAKHIR + GRAFIK REAL-TIME TAMBAHAN
+    
+   # ============================================================
+    # BAGIAN 6: 50 DATA TERAKHIR + GRAFIK REAL-TIME TAMBAHAN (DIBUAT REAL-TIME & DIKUNCI DI 50)
     # ============================================================
     st.markdown('<div class="section-custom-container">', unsafe_allow_html=True)
 
-    # Mengunci data hanya pada 50 data pertama agar grafik diam (tidak bergeser)
-    df_50 = data_tampil.head(50).copy()
+    # Membaca langsung dari file 50 data terakhir secara mandiri
+    try:
+        df_50_raw = pd.read_excel("Log_Data_Bayam_Brazil_50_Data.xlsx")
+    except Exception:
+        try:
+            df_50_raw = pd.read_csv("Log_Data_Bayam_Brazil_50_Terakhir_v4.xlsx - 50 Data Terakhir.csv")
+        except Exception as e:
+            st.error(f"⚠️ Gagal memuat file 50 data terakhir. Detail: {e}")
+            df_50_raw = pd.DataFrame()
 
-    st.subheader("📑 (50) Data Monitoring Terakhir terurut ")
-    st.dataframe(
-        df_50,
-        use_container_width=True,
-        height=350
-    )
-
-    st.markdown("---")
-    st.subheader("📊 Grafik Monitoring 50 Data Terakhir")
-    col_g1, col_g2 = st.columns(2)
-
-    with col_g1:
-        fig50_kel = go.Figure()
-        fig50_kel.add_trace(go.Scatter(
-            x=df_50["NO"],
-            y=df_50["Kelembapan"],
-            mode="lines+markers",
-            name="Kelembapan (%)",
-            line=dict(color="#16a34a", width=3)
-        ))
-        fig50_kel.update_layout(
-            title="💧 Kelembapan 50 Data Terakhir",
-            height=350,
-            **PLOT_W
-        )
-        st.plotly_chart(
-            fig50_kel,
-            use_container_width=True,
-            key="grafik50kelembapan"
-        )
-
-    with col_g2:
-        fig50_suhu = go.Figure()
-        fig50_suhu.add_trace(go.Scatter(
-            x=df_50["NO"],
-            y=df_50["Suhu"],
-            mode="lines+markers",
-            name="Suhu (°C)",
-            line=dict(color="#dc2626", width=3)
-        ))
+    if not df_50_raw.empty:
+        # --- LOGIKA REAL-TIME & KUNCI DI 50 DATA ---
+        # Menghitung jumlah baris yang tampil secara bertahap berdasarkan live_counter
+        # Menggunakan min(..., 50) agar ketika mencapai 50, nilainya terkunci dan tidak bertambah lagi
+        jumlah_tampil = min(st.session_state.live_counter + 1, 50)
         
-        fig50_suhu.update_layout(
-            title="🌡️ Suhu 50 Data Terakhir",
-            height=350,
-            **PLOT_W
-        )
-        
-        st.plotly_chart(
-            fig50_suhu,
+        # Ambil data dari baris pertama hingga batas jumlah_tampil
+        df_50 = df_50_raw.iloc[:jumlah_tampil].copy()
+
+        st.subheader(f"📑 (50) Data Monitoring Terakhir — Terkumpul: {jumlah_tampil}/50")
+        st.dataframe(
+            df_50,
             use_container_width=True,
-            key="grafik50suhu_statis" 
+            height=350
         )
+
+        st.markdown("---")
+        st.subheader("📊 Grafik Monitoring 50 Data Terakhir")
+        col_g1, col_g2 = st.columns(2)
+
+        with col_g1:
+            fig50_kel = go.Figure()
+            fig50_kel.add_trace(go.Scatter(
+                x=df_50["NO"],
+                y=df_50["KELEMBAPAN"],
+                mode="lines+markers",
+                name="Kelembapan (%)",
+                line=dict(color="#16a34a", width=3)
+            ))
+            fig50_kel.update_layout(
+                title="💧 Kelembapan 50 Data Terakhir",
+                height=350,
+                xaxis=dict(title="No. Data", gridcolor="#333333"),
+                yaxis=dict(title="Kelembapan (%)", gridcolor="#333333"),
+                template="plotly_dark",
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="white"),
+                margin=dict(l=40, r=40, t=40, b=40),
+                uirevision="bayam-50-kel" # Mencegah grafik berkedip/reset zoom saat data bertambah
+            )
+            st.plotly_chart(
+                fig50_kel,
+                use_container_width=True,
+                key="grafik50kelembapan"
+            )
+
+        with col_g2:
+            fig50_suhu = go.Figure()
+            fig50_suhu.add_trace(go.Scatter(
+                x=df_50["NO"],
+                y=df_50["SUHU"],
+                mode="lines+markers",
+                name="Suhu (°C)",
+                line=dict(color="#dc2626", width=3)
+            ))
+            
+            fig50_suhu.update_layout(
+                title="🌡️ Suhu 50 Data Terakhir",
+                height=350,
+                xaxis=dict(title="No. Data", gridcolor="#333333"),
+                yaxis=dict(title="Suhu (°C)", gridcolor="#333333"),
+                template="plotly_dark",
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="white"),
+                margin=dict(l=40, r=40, t=40, b=40),
+                uirevision="bayam-50-suhu" # Mencegah grafik berkedip/reset zoom saat data bertambah
+            )
+            
+            st.plotly_chart(
+                fig50_suhu,
+                use_container_width=True,
+                key="grafik50suhu_statis" 
+            )
 
     st.markdown('</div>', unsafe_allow_html=True)
 
